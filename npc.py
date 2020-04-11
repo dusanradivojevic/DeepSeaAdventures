@@ -7,6 +7,9 @@ import math
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 
+# Amount of change for fishes in every loop iteration, side effect: bigger the number - bigger the speed (in pixels)
+MOVING_VALUE = 1
+
 
 # Non Player Character
 class NpcSprite(pygame.sprite.Sprite):
@@ -27,6 +30,9 @@ class NpcSprite(pygame.sprite.Sprite):
 
         self.direction = Direction(randDir)
 
+    def stop(self):
+        self.alive = False
+
     def swimming(self):
         dirChangeTimer = DirectionChanger(SCREEN_HEIGHT / 10, SCREEN_HEIGHT / 2)
         while self.alive:
@@ -45,25 +51,25 @@ class NpcSprite(pygame.sprite.Sprite):
             self.changeDirection()
             return
         if self.direction == Direction.North:
-            self.rect.top -= 1
+            self.rect.top -= MOVING_VALUE
         if self.direction == Direction.NorthEast:
-            self.rect.top -= 1
-            self.rect.left += 1
+            self.rect.top -= MOVING_VALUE
+            self.rect.left += MOVING_VALUE
         if self.direction == Direction.East:
-            self.rect.left += 1
+            self.rect.left += MOVING_VALUE
         if self.direction == Direction.SouthEast:
-            self.rect.top += 1
-            self.rect.left += 1
+            self.rect.top += MOVING_VALUE
+            self.rect.left += MOVING_VALUE
         if self.direction == Direction.South:
-            self.rect.top += 1
+            self.rect.top += MOVING_VALUE
         if self.direction == Direction.SouthWest:
-            self.rect.top += 1
-            self.rect.left -= 1
+            self.rect.top += MOVING_VALUE
+            self.rect.left -= MOVING_VALUE
         if self.direction == Direction.West:
-            self.rect.left -= 1
+            self.rect.left -= MOVING_VALUE
         if self.direction == Direction.NorthWest:
-            self.rect.top -= 1
-            self.rect.left -= 1
+            self.rect.top -= MOVING_VALUE
+            self.rect.left -= MOVING_VALUE
 
     def goOpposite(self):
         self.direction = Direction(self.direction.value * -1)
@@ -88,7 +94,7 @@ class NpcSprite(pygame.sprite.Sprite):
 class BlueFish(NpcSprite):
     def __init__(self, id):
         self.speed = 120  # smaller fish -> higher speed -> more frequent in generator
-        self.size_index = 5  # larger fish -> smaller index
+        self.size = 100
         self.image = './img/npcs/BlueFish.png'
         self.image_reverse = './img/npcs/BlueFishReverse.png'
         NpcSprite.__init__(self, self.image, self.image_reverse, self.speed, id)
@@ -97,7 +103,7 @@ class BlueFish(NpcSprite):
 class FlyingFish(NpcSprite):
     def __init__(self, id):
         self.speed = 160
-        self.size_index = 5
+        self.size = 100
         self.image = './img/npcs/FlyingFish.png'
         self.image_reverse = './img/npcs/FlyingFishReverse.png'
         NpcSprite.__init__(self, self.image, self.image_reverse, self.speed, id)
@@ -106,7 +112,7 @@ class FlyingFish(NpcSprite):
 class GreyFish(NpcSprite):
     def __init__(self, id):
         self.speed = 60
-        self.size_index = 3
+        self.size = 300
         self.image = './img/npcs/GreyFish.png'
         self.image_reverse = './img/npcs/GreyFishReverse.png'
         NpcSprite.__init__(self, self.image, self.image_reverse, self.speed, id)
@@ -115,7 +121,7 @@ class GreyFish(NpcSprite):
 class YellowFish(NpcSprite):
     def __init__(self, id):
         self.speed = 20
-        self.size_index = 1
+        self.size = 500
         self.image = './img/npcs/YellowFish.png'
         self.image_reverse = './img/npcs/YellowFishReverse.png'
         NpcSprite.__init__(self, self.image, self.image_reverse, self.speed, id)
@@ -124,20 +130,23 @@ class YellowFish(NpcSprite):
 class YellowStrapeFish(NpcSprite):
     def __init__(self, id):
         self.speed = 50
-        self.size_index = 3
+        self.size = 300
         self.image = './img/npcs/YellowStrapeFish.png'
         self.image_reverse = './img/npcs/YellowStrapeFishReverse.png'
         NpcSprite.__init__(self, self.image, self.image_reverse, self.speed, id)
 
 
-# Fish generator class
+# Fish generator class, spawn fishes in the tank
 class FishGenerator:
     def __init__(self, fish_tank_capacity, frequency, list):
-        self.id_generator = 0
+        self.id_generator = 0  # Should not be reduced
         self.capacity = fish_tank_capacity
         self.frequency = frequency
         self.work = True
         self.fishes = list  # list of fishes in the tank
+
+    def stop(self):
+        self.work = False
 
     def start(self):
         while self.work:
@@ -150,20 +159,20 @@ class FishGenerator:
             rand = random.randint(1, 10)  # top limit depends on number of species
 
             if rand == 1:
-                newFish = YellowFish(self.id_generator)
-            if rand > 1 and rand <= 2:
-                newFish = YellowStrapeFish(self.id_generator)
-            if rand > 2 and rand <= 4:
-                newFish = GreyFish(self.id_generator)
-            if rand > 4 and rand <= 7:
-                newFish = BlueFish(self.id_generator)
-            if rand > 7 and rand <= 10:
-                newFish = FlyingFish(self.id_generator)
+                new_fish = YellowFish(self.id_generator)
+            if 1 < rand <= 2:
+                new_fish = YellowStrapeFish(self.id_generator)
+            if 2 < rand <= 4:
+                new_fish = GreyFish(self.id_generator)
+            if 4 < rand <= 7:
+                new_fish = BlueFish(self.id_generator)
+            if 7 < rand <= 10:
+                new_fish = FlyingFish(self.id_generator)
 
-            self.fishes.append(newFish)
+            self.fishes.append(new_fish)
             self.id_generator += 1
 
-            thread = Thread(target=newFish.swimming)
+            thread = Thread(target=new_fish.swimming)
             thread.start()
 
             time.sleep(self.frequency)
@@ -175,6 +184,9 @@ class MovementController:
         self.min_distance = 50  # pixels
         self.work = True
         self.fishes = list  # list of fishes in the tank
+
+    def stop(self):
+        self.work = False
 
     def start_control(self):
         while self.work:
@@ -191,8 +203,9 @@ class MovementController:
                 while self.endangered(fish):
                     fish.changeDirection()
                     fish.move()
+                    time.sleep(0.5)  # fishes need to have time to move
 
-            time.sleep(0.5)  # fishes need to have time to move
+            time.sleep(0.1)
 
     def endangered(self, fish):
         x = fish.rect.centerx
@@ -201,7 +214,7 @@ class MovementController:
             if fish.id == other.id:
                 continue
 
-            if fish.size_index < other.size_index:
+            if fish.size > other.size:
                 continue
 
             x2 = other.rect.centerx
