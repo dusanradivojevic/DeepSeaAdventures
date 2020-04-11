@@ -6,6 +6,7 @@ import sys
 from threading import Thread
 from player import Player
 from game_controller import *
+import other_screens
 
 # Constants
 SCREEN_WIDTH = 800
@@ -29,6 +30,9 @@ def main():
     pygame.display.set_caption("Feeding Frenzy")
     icon = pygame.image.load('./img/logo/fish-512.png')
     pygame.display.set_icon(icon)
+
+    # Starting screen
+    other_screens.starting_screen(screen)
 
     # Background
     background = Background('./img/background/6riverrock.jpg', [0, 0])
@@ -58,14 +62,13 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 stop_threads(components)
-                print(f'Score: {game_controller.score}, size: {player.size}, time: {game_controller.played_time}')
                 return
 
             elif event.type == pygame.USEREVENT:
                 if event == GAME_OVER_EVENT:
                     running = False
                     stop_threads(components)
-                    print(f'Score: {game_controller.score}, size: {player.size}, time: {game_controller.played_time}')
+                    other_screens.ending_screen(screen, game_controller.score, game_controller.played_time, game_controller.fish_eaten)
                     continue
 
         # Screen redraw

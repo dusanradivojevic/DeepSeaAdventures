@@ -30,6 +30,7 @@ def find_index_of_fish(list, fish):
 class GameController:
     def __init__(self, list, player):
         self.score = 0
+        self.fish_eaten = 0
         self.start_time = time.time()
         self.end_time = time.time()
         self.played_time = "0"
@@ -63,6 +64,7 @@ class GameController:
         fish.stop()
         self.fishes.pop(find_index_of_fish(self.fishes, fish))
         self.score += (SCORE_PERCENT / 100) * fish.size
+        self.fish_eaten += 1
         self.player.size += (SIZE_PERCENT / 100) * fish.size
 
     def game_over(self):
