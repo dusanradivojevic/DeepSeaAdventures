@@ -26,6 +26,7 @@ def find_index_of_fish(list, fish):
 
     return -1
 
+
 class GameController:
     def __init__(self, list, player):
         self.score = 0
@@ -34,29 +35,29 @@ class GameController:
         self.played_time = "0"
         self.fishes = list
         self.player = player
-        self.work = True
 
     def stop(self):
         self.end_time = time.time()
         time_lapsed = self.end_time - self.start_time
         self.played_time = time_convert(time_lapsed)
-        self.work = False
 
     def start(self):
-        while self.work:
-            for fish in self.fishes:
-                x = self.player.rect.centerx
-                y = self.player.rect.centery
+        for fish in self.fishes:
+            x = self.player.rect.centerx
+            y = self.player.rect.centery
 
-                x2 = fish.rect.centerx
-                y2 = fish.rect.centery
-                if math.sqrt(pow((x2 - x), 2) + pow((y2 - y), 2)) < IMAGE_SIZE_MISMATCH:
-                    if self.player.size < ((100 - FISH_SIZE_DIFFERENCE) / 100) * fish.size:
-                        self.game_over()
-                    elif self.player.size > ((100 + FISH_SIZE_DIFFERENCE) / 100) * fish.size:
-                        self.eat(fish)
+            x2 = fish.rect.centerx
+            y2 = fish.rect.centery
+            if math.sqrt(pow((x2 - x), 2) + pow((y2 - y), 2)) < IMAGE_SIZE_MISMATCH:
+                if self.player.size < ((100 - FISH_SIZE_DIFFERENCE) / 100) * fish.size:
+                    self.game_over()
+                elif self.player.size > ((100 + FISH_SIZE_DIFFERENCE) / 100) * fish.size:
+                    self.eat(fish)
 
-            time.sleep(0.1)
+        # time.sleep(0.1)
+
+    def get_score(self):
+        return f'Score: {self.score}'
 
     def eat(self, fish):
         fish.stop()
