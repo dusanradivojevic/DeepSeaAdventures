@@ -7,6 +7,8 @@ from threading import Thread
 from player import Player
 from game_controller import *
 import other_screens
+from sounds import SoundPlayer
+from other_screens import Screen as Screen_Enum
 
 # Constants
 SCREEN_WIDTH = 800
@@ -22,17 +24,9 @@ def stop_threads(list):
         item.stop()
 
 
-def main():
-    pygame.init()
-
-    # Game screen options
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    pygame.display.set_caption("Feeding Frenzy")
-    icon = pygame.image.load('./img/logo/fish-512.png')
-    pygame.display.set_icon(icon)
-
-    # Starting screen
-    other_screens.starting_screen(screen)
+def main_screen(screen):
+    # Cursor visibility
+    pygame.mouse.set_visible(False)
 
     # Background
     background = Background('./img/background/6riverrock.jpg', [0, 0])
@@ -62,14 +56,13 @@ def main():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 stop_threads(components)
-                return
+                return Screen_Enum.EXIT
 
             elif event.type == pygame.USEREVENT:
                 if event == GAME_OVER_EVENT:
                     running = False
                     stop_threads(components)
-                    other_screens.ending_screen(screen, game_controller.score, game_controller.played_time, game_controller.fish_eaten)
-                    continue
+                    return other_screens.ending_screen(screen, game_controller.score, game_controller.played_time, game_controller.fish_eaten)
 
         # Screen redraw
         screen.fill([255, 255, 255])
@@ -99,5 +92,38 @@ def main():
         #
         pygame.display.update()
         # End of redraw
+
+
+def main():
+    pygame.init()
+
+    # Background sound
+    back_sound = SoundPlayer('./audio/Dan Balan - Lendo Calendo ft. Tany Vander & Brasco (Lyric Video).wav', True)
+    back_sound.play()
+
+    # Game screen options
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    pygame.display.set_caption("Feeding Frenzy")
+    icon = pygame.image.load('./img/logo/fish-512.png')
+    pygame.display.set_icon(icon)
+
+    signal = Screen_Enum.Start
+    while True:
+        if signal == Screen_Enum.EXIT:
+            back_sound.stop()
+            return
+
+        if signal == Screen_Enum.Start:
+            signal = other_screens.starting_screen(screen)
+
+        if signal == Screen_Enum.Game:
+            signal = main_screen(screen)
+
+        if signal == Screen_Enum.Credits:
+            signal = other_screens.credits_screen(screen)
+
+        # if signal == Screen_Enum.GameOver:
+        #     signal = other_screens.ending_screen()
+
 
 main()

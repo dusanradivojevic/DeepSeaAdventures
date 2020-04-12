@@ -105,7 +105,7 @@ class BlueFish(NpcSprite):
 
 class FlyingFish(NpcSprite):
     def __init__(self, id):
-        self.speed = 1.5
+        self.speed = 1.6
         self.size = 100
         self.image = './img/npcs/FlyingFish.png'
         self.image_reverse = './img/npcs/FlyingFishReverse.png'
@@ -114,7 +114,7 @@ class FlyingFish(NpcSprite):
 
 class GreyFish(NpcSprite):
     def __init__(self, id):
-        self.speed = 1.2
+        self.speed = 1.3
         self.size = 300
         self.image = './img/npcs/GreyFish.png'
         self.image_reverse = './img/npcs/GreyFishReverse.png'
@@ -123,8 +123,8 @@ class GreyFish(NpcSprite):
 
 class YellowFish(NpcSprite):
     def __init__(self, id):
-        self.speed = 0.9
-        self.size = 500
+        self.speed = 1  # not recommended to go below 1 pixel
+        self.size = 1500
         self.image = './img/npcs/YellowFish.png'
         self.image_reverse = './img/npcs/YellowFishReverse.png'
         NpcSprite.__init__(self, self.image, self.image_reverse, self.speed, id)
@@ -132,7 +132,7 @@ class YellowFish(NpcSprite):
 
 class YellowStrapeFish(NpcSprite):
     def __init__(self, id):
-        self.speed = 1.1
+        self.speed = 1.2
         self.size = 300
         self.image = './img/npcs/YellowStrapeFish.png'
         self.image_reverse = './img/npcs/YellowStrapeFishReverse.png'

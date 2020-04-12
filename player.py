@@ -9,7 +9,5 @@ class Player:
         self.rect.left, self.rect.top = [coordX, coordY]
         self.size = size
 
-        pygame.mouse.set_visible(False)
-
     def move(self):
         self.rect.centerx, self.rect.centery = pygame.mouse.get_pos()

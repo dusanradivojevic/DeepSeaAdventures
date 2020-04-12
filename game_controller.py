@@ -1,6 +1,7 @@
 import time
 import math
 import pygame
+from sounds import SoundPlayer
 
 IMAGE_SIZE_MISMATCH = 50  # Used for better representation of player eating other fishes (in pixels)
 FISH_SIZE_DIFFERENCE = 20  # It does not make sense if player with size of 401 can eat fish with 402 size (in percent)
@@ -61,6 +62,7 @@ class GameController:
         return f'Score: {self.score}'
 
     def eat(self, fish):
+        SoundPlayer('./audio/eating_sound.wav', False).play()
         fish.stop()
         self.fishes.pop(find_index_of_fish(self.fishes, fish))
         self.score += (SCORE_PERCENT / 100) * fish.size
