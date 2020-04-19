@@ -10,15 +10,15 @@ SCREEN_HEIGHT = 600
 
 # Non Player Character
 class NpcSprite(pygame.sprite.Sprite):
-    def __init__(self, image, reverse_image, speed, id):
+    def __init__(self, id):
         self.id = id
         pygame.sprite.Sprite.__init__(self)
-        self.image = image
-        self.reverse_image = reverse_image
-        self.current_image = pygame.image.load(self.image)
+        self.image_array = self.load_images()
+        self.reverse_image_array = self.load_images('Reverse')
+        self.image_picker = 0  # tracking index of image in image array (for gifs)
+        self.current_image = self.image_array[0]
         self.rect = self.current_image.get_rect()
         self.rect.left, self.rect.top = [random.randint(100, SCREEN_WIDTH - 100), random.randint(100, SCREEN_HEIGHT - 100)]
-        self.movement_speed = speed  # in pixels
         self.alive = True
 
         randDir = random.randint(-4, 4)  # Direciton values: [-4 , 4]
@@ -71,6 +71,8 @@ class NpcSprite(pygame.sprite.Sprite):
             self.rect.top -= self.movement_speed
             self.rect.left -= self.movement_speed
 
+        self.pickImage()  # Movement_controller also calls upon move() method !
+
     def goOpposite(self):
         self.direction = Direction(self.direction.value * -1)
 
@@ -92,51 +94,86 @@ class NpcSprite(pygame.sprite.Sprite):
 
         self.direction = Direction(newValue)
 
+    def pickImage(self):
+        self.image_picker += 1
+        if self.image_picker > len(self.image_array) - 1:
+            self.image_picker = 0
+
+        if self.direction.value < 0:
+            self.current_image = self.image_array[self.image_picker]
+        else:
+            self.current_image = self.reverse_image_array[self.image_picker]
+
+    def load_images(self, reverse=''):
+        temp = []
+        i = 0
+        try:
+            while True:
+                temp.append(pygame.image.load(self.image_path + self.image_name + reverse + str(i) + self.image_extension))
+                i += 1
+        except:
+            return temp
+
 
 # Types of fishes
 class BlueFish(NpcSprite):
     def __init__(self, id):
-        self.speed = 2  # smaller fish -> higher speed -> more pixels change
+        self.movement_speed = 2  # smaller fish -> higher speed -> more pixels change
         self.size = 100
-        self.image = './img/npcs/BlueFish.png'
-        self.image_reverse = './img/npcs/BlueFishReverse.png'
-        NpcSprite.__init__(self, self.image, self.image_reverse, self.speed, id)
+        self.image_path = './img/npcs/'
+        self.image_name = 'BlueFish'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, id)
 
 
 class FlyingFish(NpcSprite):
     def __init__(self, id):
-        self.speed = 1.6
+        self.movement_speed = 1.6
         self.size = 100
-        self.image = './img/npcs/FlyingFish.png'
-        self.image_reverse = './img/npcs/FlyingFishReverse.png'
-        NpcSprite.__init__(self, self.image, self.image_reverse, self.speed, id)
+        self.image_path = './img/npcs/'
+        self.image_name = 'FlyingFish'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, id)
 
 
 class GreyFish(NpcSprite):
     def __init__(self, id):
-        self.speed = 1.3
+        self.movement_speed = 1.3
         self.size = 300
-        self.image = './img/npcs/GreyFish.png'
-        self.image_reverse = './img/npcs/GreyFishReverse.png'
-        NpcSprite.__init__(self, self.image, self.image_reverse, self.speed, id)
+        self.image_path = './img/npcs/'
+        self.image_name = 'GreyFish'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, id)
 
 
 class YellowFish(NpcSprite):
     def __init__(self, id):
-        self.speed = 1  # not recommended to go below 1 pixel
+        self.movement_speed = 1  # not recommended to go below 1 pixel
         self.size = 1500
-        self.image = './img/npcs/YellowFish.png'
-        self.image_reverse = './img/npcs/YellowFishReverse.png'
-        NpcSprite.__init__(self, self.image, self.image_reverse, self.speed, id)
+        self.image_path = './img/npcs/'
+        self.image_name = 'YellowFish'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, id)
 
 
 class YellowStrapeFish(NpcSprite):
     def __init__(self, id):
-        self.speed = 1.2
+        self.movement_speed = 1.2
         self.size = 300
-        self.image = './img/npcs/YellowStrapeFish.png'
-        self.image_reverse = './img/npcs/YellowStrapeFishReverse.png'
-        NpcSprite.__init__(self, self.image, self.image_reverse, self.speed, id)
+        self.image_path = './img/npcs/'
+        self.image_name = 'YellowStrapeFish'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, id)
+
+
+class Bird(NpcSprite):
+    def __init__(self, id):
+        self.movement_speed = 1.4
+        self.size = 300
+        self.image_path = './img/npcs/bird/'
+        self.image_name = 'bird'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, id)
 
 
 # Fish generator class, spawn fishes in the tank
@@ -159,7 +196,7 @@ class FishGenerator:
                 # self.fishes.pop(0)
                 continue
 
-            rand = random.randint(1, 11)  # top limit depends on number of species
+            rand = random.randint(1, 15)  # top limit depends on number of species
 
             if rand == 1:
                 new_fish = YellowFish(self.id_generator)
@@ -171,6 +208,8 @@ class FishGenerator:
                 new_fish = BlueFish(self.id_generator)
             if 8 < rand <= 11:
                 new_fish = FlyingFish(self.id_generator)
+            if 11 < rand <= 15:
+                new_fish = Bird(self.id_generator)
 
             self.fishes.append(new_fish)
             self.id_generator += 1

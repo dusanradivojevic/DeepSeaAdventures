@@ -45,7 +45,7 @@ def main_screen(screen):
 
     movement_controller = MovementController(listOfFishes)
 
-    player = Player('./img/npcs/YellowFish.png', 0, 0, 350)
+    player = Player('./img/npcs/YellowFish0.png', 0, 0, 350)
 
     game_controller = GameController(listOfFishes, player)
     components.append(game_controller)
@@ -76,11 +76,6 @@ def main_screen(screen):
             fish.swim()
             screen.blit(fish.current_image, fish.rect)
 
-            if fish.direction.value < 0:
-                fish.current_image = pygame.image.load(fish.image_reverse)
-            else:
-                fish.current_image = pygame.image.load(fish.image)
-
         player.move()
         game_controller.start()
 
@@ -98,8 +93,8 @@ def main():
     pygame.init()
 
     # Background sound
-    back_sound = SoundPlayer('./audio/Dan Balan - Lendo Calendo ft. Tany Vander & Brasco (Lyric Video).wav', True)
-    back_sound.play()
+    # back_sound = SoundPlayer('./audio/Dan Balan - Lendo Calendo ft. Tany Vander & Brasco (Lyric Video).wav', True)
+    # back_sound.play()
 
     # Game screen options
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -110,7 +105,7 @@ def main():
     signal = Screen_Enum.Start
     while True:
         if signal == Screen_Enum.EXIT:
-            back_sound.stop()
+            # back_sound.stop()
             return
 
         if signal == Screen_Enum.Start:
