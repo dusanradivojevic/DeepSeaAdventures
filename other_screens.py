@@ -4,19 +4,7 @@ from background import Background
 import time
 import threading
 from enum import Enum
-
-# Constants
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-
-# Font & colors
-white_color = (255, 255, 255)
-black_color = (0, 0, 0)
-
-# Center of the screen
-screen_center = 400
-screen_bottom = 550
-screen_gap = 400  # space between two group of text
+import game_data as gd
 
 
 class Screen(Enum):
@@ -35,12 +23,12 @@ def starting_screen(screen):
     font = pygame.font.SysFont('Comic Sans MS', 28)
 
     # Background
-    background = Background('./img/background/background_blue_patterns_.jpg', [0, 0])
+    background = Background('./img/background/abstract-dark-blue-polygonal-background-abstraktsiia-geometr.jpg', [0, 0])
 
     # Buttons
-    start_new_game_btn = Button(screen_center, 100, font, white_color,  'Start new game')
-    credits_btn = Button(screen_center, 250, font,  white_color, 'Credits')
-    quit_btn = Button(screen_center, 400, font,  white_color, 'Quit game')
+    start_new_game_btn = Button(gd.screen_center, 0.25 * gd.SCREEN_HEIGHT, font, gd.white_color,  'Start new game')
+    credits_btn = Button(gd.screen_center, 0.45 * gd.SCREEN_HEIGHT, font,  gd.white_color, 'Credits')
+    quit_btn = Button(gd.screen_center, 0.65 * gd.SCREEN_HEIGHT, font,  gd.white_color, 'Quit game')
 
     running = True
     while running:
@@ -74,27 +62,27 @@ def credits_screen(screen):
     font = pygame.font.SysFont('Comic Sans MS', font_size)
 
     # Background
-    background = Background('./img/background/background_blue_patterns_.jpg', [0, 0])
+    background = Background('./img/background/abstract-dark-blue-polygonal-background-abstraktsiia-geometr.jpg', [0, 0])
 
     # Texts
     texts = ['Author:', 'Dusan Radivojevic', 'Year:', '2020']
 
     text_renders = []
     for i in range(len(texts)):
-        text_renders.append(font.render(texts[i], False, white_color))
+        text_renders.append(font.render(texts[i], False, gd.white_color))
 
     text_rects = [
-        [text_renders[0], [screen_center - (pygame.font.Font.size(font, texts[0])[0] / 2), screen_bottom]],
-        [text_renders[1], [screen_center - (pygame.font.Font.size(font, texts[1])[0] / 2), screen_bottom + font_size]],
-        [text_renders[2], [screen_center - (pygame.font.Font.size(font, texts[2])[0] / 2), screen_bottom + (1 * screen_gap)]],
-        [text_renders[3], [screen_center - (pygame.font.Font.size(font, texts[3])[0] / 2), screen_bottom + (1 * screen_gap) + font_size]]
+        [text_renders[0], [gd.screen_center - (pygame.font.Font.size(font, texts[0])[0] / 2), gd.screen_bottom]],
+        [text_renders[1], [gd.screen_center - (pygame.font.Font.size(font, texts[1])[0] / 2), gd.screen_bottom + font_size]],
+        [text_renders[2], [gd.screen_center - (pygame.font.Font.size(font, texts[2])[0] / 2), gd.screen_bottom + (1 * gd.screen_gap)]],
+        [text_renders[3], [gd.screen_center - (pygame.font.Font.size(font, texts[3])[0] / 2), gd.screen_bottom + (1 * gd.screen_gap) + font_size]]
         # [text_renders[4], [screen_center - (pygame.font.Font.size(font, texts[4])[0] / 2), screen_bottom + (2 * screen_gap)]],
         # [text_renders[5], [screen_center - (pygame.font.Font.size(font, texts[5])[0] / 2), screen_bottom + (2 * screen_gap) + font_size]]
     ]
 
     blink = BlinkingText(screen, font, 'Press any key to continue...',
-                         [screen_center - (pygame.font.Font.size(font, 'Press any key to continue...')[0] / 2),
-                          SCREEN_HEIGHT / 2],
+                         [gd.screen_center - (pygame.font.Font.size(font, 'Press any key to continue...')[0] / 2),
+                          gd.SCREEN_HEIGHT / 2],
                          0.7)
     ###
 
@@ -123,7 +111,7 @@ def credits_screen(screen):
             else:
                 for i in range(len(text_rects)):
                     screen.blit(text_rects[i][0], text_rects[i][1])
-                    text_rects[i][1][1] -= 2  # speed of rising text
+                    text_rects[i][1][1] -= 5  # speed of rising text
 
         pygame.display.update()
 
@@ -142,7 +130,7 @@ class BlinkingText:
         self.active = False
 
     def start(self):
-        prepared_text = self.font.render(self.text, False, white_color)
+        prepared_text = self.font.render(self.text, False, gd.white_color)
         self.switcher()
         while self.active:
             if self.switch:
@@ -174,10 +162,10 @@ def ending_screen(screen, score, time_played, fish_eaten):
 
     # Texts
     texts = [
-        font.render(f'Score: {score}', False, white_color),
-        font.render(f'Fish eaten: {fish_eaten}', False, white_color),
-        font.render(f'Time played: {time_played}', False, white_color),
-        font.render('Thank you for playing!', False, white_color)
+        font.render(f'Score: {score}', False, gd.white_color),
+        font.render(f'Fish eaten: {fish_eaten}', False, gd.white_color),
+        font.render(f'Time played: {time_played}', False, gd.white_color),
+        font.render('Thank you for playing!', False, gd.white_color)
     ]
 
     starting_height = 200
@@ -205,7 +193,7 @@ def ending_screen(screen, score, time_played, fish_eaten):
 
         for i in range(len(texts)):
             # Game over text
-            screen.blit(font_big.render('GAME OVER :(', False, white_color), [200, starting_height - (2 * font_size_big)])
+            screen.blit(font_big.render('GAME OVER :(', False, gd.white_color), [200, starting_height - (2 * font_size_big)])
             #
 
             if i == 3:

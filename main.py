@@ -9,14 +9,7 @@ from game_controller import *
 import other_screens
 from sounds import SoundPlayer
 from other_screens import Screen as Screen_Enum
-
-# Constants
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 600
-TANK_CAPACITY = 10
-SPAWN_FREQUENCY = 2  # every 2 seconds fish spawns
-SCORE_POSITION_LEFT = 0
-SCORE_POSITION_TOP = 550
+import game_data as gd
 
 
 def stop_threads(list):
@@ -29,7 +22,7 @@ def main_screen(screen):
     pygame.mouse.set_visible(False)
 
     # Background
-    background = Background('./img/background/6riverrock.jpg', [0, 0])
+    background = Background('./img/background/bottom-of-the-sea-background.jpg', [0, 0])
 
     # Score text
     text_color = (255, 255, 255)  # White
@@ -38,7 +31,7 @@ def main_screen(screen):
     listOfFishes = []
     components = []  # Objects whose methods were used in threads
 
-    generator = FishGenerator(TANK_CAPACITY, SPAWN_FREQUENCY, listOfFishes)
+    generator = FishGenerator(gd.TANK_CAPACITY, gd.SPAWN_FREQUENCY, listOfFishes)
     generator_thread = Thread(target=generator.start)
     generator_thread.start()
     components.append(generator)
@@ -58,7 +51,13 @@ def main_screen(screen):
                 stop_threads(components)
                 return Screen_Enum.EXIT
 
-            elif event.type == pygame.USEREVENT:
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    running = False
+                    stop_threads(components)
+                    return Screen_Enum.Start
+
+            if event.type == pygame.USEREVENT:
                 if event == GAME_OVER_EVENT:
                     running = False
                     stop_threads(components)
@@ -83,7 +82,7 @@ def main_screen(screen):
 
         # Showing score
         score_surface = font.render(game_controller.get_score(), False, text_color)
-        screen.blit(score_surface, (SCORE_POSITION_LEFT, SCORE_POSITION_TOP))
+        screen.blit(score_surface, (gd.SCORE_POSITION_LEFT, gd.SCORE_POSITION_TOP))
         #
         pygame.display.update()
         # End of redraw
@@ -97,7 +96,11 @@ def main():
     # back_sound.play()
 
     # Game screen options
-    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
+    w, h = screen.get_size()
+    gd.set_property('SCREEN_WIDTH', w)
+    gd.set_property('SCREEN_HEIGHT', h)
+
     pygame.display.set_caption("Feeding Frenzy")
     icon = pygame.image.load('./img/logo/fish-512.png')
     pygame.display.set_icon(icon)

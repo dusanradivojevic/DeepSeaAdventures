@@ -1,12 +1,12 @@
 import pygame
-
-screen_center = 400
+# from game_data import *
+import game_data as gd
 
 
 class Button:
     def __init__(self, position_x, position_y, font, text_color, text):
         self.width, self.height = pygame.font.Font.size(font, text)
-        self.position_x = (screen_center - (self.width / 2))
+        self.position_x = (gd.screen_center - (self.width / 2))
         self.position_y = position_y
         self.font = font
         self.text_color = text_color

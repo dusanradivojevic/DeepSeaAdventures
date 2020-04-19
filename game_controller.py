@@ -2,11 +2,7 @@ import time
 import math
 import pygame
 from sounds import SoundPlayer
-
-IMAGE_SIZE_MISMATCH = 50  # Used for better representation of player eating other fishes (in pixels)
-FISH_SIZE_DIFFERENCE = 20  # It does not make sense if player with size of 401 can eat fish with 402 size (in percent)
-SCORE_PERCENT = 5  # Percent of fish size that will be added to player's SCORE after eating (in percent)
-SIZE_PERCENT = 5  # Percent of fish size that will be added to player's SIZE after eating (in percent)
+import game_data as gd
 
 # Event custom types
 GAME_OVER_EVENT = pygame.event.Event(pygame.USEREVENT)
@@ -50,10 +46,10 @@ class GameController:
 
             x2 = fish.rect.centerx
             y2 = fish.rect.centery
-            if math.sqrt(pow((x2 - x), 2) + pow((y2 - y), 2)) < IMAGE_SIZE_MISMATCH:
-                if self.player.size < ((100 - FISH_SIZE_DIFFERENCE) / 100) * fish.size:
+            if math.sqrt(pow((x2 - x), 2) + pow((y2 - y), 2)) < gd.IMAGE_SIZE_MISMATCH:
+                if self.player.size < ((100 - gd.FISH_SIZE_DIFFERENCE) / 100) * fish.size:
                     self.game_over()
-                elif self.player.size > ((100 + FISH_SIZE_DIFFERENCE) / 100) * fish.size:
+                elif self.player.size > ((100 + gd.FISH_SIZE_DIFFERENCE) / 100) * fish.size:
                     self.eat(fish)
 
         # time.sleep(0.1)
@@ -65,9 +61,9 @@ class GameController:
         SoundPlayer('./audio/eating_sound.wav', False).play()
         fish.stop()
         self.fishes.pop(find_index_of_fish(self.fishes, fish))
-        self.score += (SCORE_PERCENT / 100) * fish.size
+        self.score += (gd.SCORE_PERCENT / 100) * fish.size
         self.fish_eaten += 1
-        self.player.size += (SIZE_PERCENT / 100) * fish.size
+        self.player.size += (gd.SIZE_PERCENT / 100) * fish.size
 
     def game_over(self):
         # Show end screen
