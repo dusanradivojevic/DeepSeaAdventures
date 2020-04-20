@@ -11,6 +11,8 @@ from sounds import SoundPlayer
 from other_screens import Screen as Screen_Enum
 import game_data as gd
 
+components = []  # Objects whose methods were used in threads
+
 
 def stop_threads(list):
     for item in list:
@@ -29,7 +31,6 @@ def main_screen(screen):
     font = pygame.font.SysFont('Comic Sans MS', 28)
 
     listOfFishes = []
-    components = []  # Objects whose methods were used in threads
 
     generator = FishGenerator(gd.TANK_CAPACITY, gd.SPAWN_FREQUENCY, listOfFishes)
     generator_thread = Thread(target=generator.start)
@@ -38,7 +39,8 @@ def main_screen(screen):
 
     movement_controller = MovementController(listOfFishes)
 
-    player = Player('./img/npcs/YellowFish0.png', 0, 0, 350)
+    player = Player('./img/npcs/downloads/', 'fish', '.png', (0, 0), 350, -1)
+    listOfFishes.append(player)
 
     game_controller = GameController(listOfFishes, player)
     components.append(game_controller)
@@ -69,13 +71,13 @@ def main_screen(screen):
 
         movement_controller.control()
         for fish in listOfFishes:
-            if not fish.alive:
+            if fish.id != -1 and not fish.alive:
                 continue
 
             fish.swim()
             screen.blit(fish.current_image, fish.rect)
 
-        player.move()
+        # player.move()
         game_controller.start()
 
         screen.blit(player.current_image, player.rect)
@@ -105,23 +107,28 @@ def main():
     icon = pygame.image.load('./img/logo/fish-512.png')
     pygame.display.set_icon(icon)
 
-    signal = Screen_Enum.Start
-    while True:
-        if signal == Screen_Enum.EXIT:
-            # back_sound.stop()
-            return
+    try:
+        signal = Screen_Enum.Start
+        while True:
+            if signal == Screen_Enum.EXIT:
+                # back_sound.stop()
+                return
 
-        if signal == Screen_Enum.Start:
-            signal = other_screens.starting_screen(screen)
+            if signal == Screen_Enum.Start:
+                signal = other_screens.starting_screen(screen)
 
-        if signal == Screen_Enum.Game:
-            signal = main_screen(screen)
+            if signal == Screen_Enum.Game:
+                signal = main_screen(screen)
 
-        if signal == Screen_Enum.Credits:
-            signal = other_screens.credits_screen(screen)
+            if signal == Screen_Enum.Credits:
+                signal = other_screens.credits_screen(screen)
 
-        # if signal == Screen_Enum.GameOver:
-        #     signal = other_screens.ending_screen()
+            # if signal == Screen_Enum.GameOver:
+            #     signal = other_screens.ending_screen()
+
+    except Exception as e:
+        print('ERROR: ' + str(e))
+        stop_threads(components)
 
 
 main()

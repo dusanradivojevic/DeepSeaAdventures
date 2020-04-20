@@ -20,7 +20,8 @@ def starting_screen(screen):
     pygame.mouse.set_visible(True)
 
     # Font
-    font = pygame.font.SysFont('Comic Sans MS', 28)
+    font_size = 36
+    font = pygame.font.SysFont('Comic Sans MS', font_size)
 
     # Background
     background = Background('./img/background/abstract-dark-blue-polygonal-background-abstraktsiia-geometr.jpg', [0, 0])
@@ -35,12 +36,13 @@ def starting_screen(screen):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return Screen.EXIT
-            elif event.type == pygame.MOUSEBUTTONUP:
+
+            if event.type == pygame.MOUSEBUTTONUP:
                 if start_new_game_btn.collision(pygame.mouse.get_pos()):
                     return Screen.Game
-                elif credits_btn.collision(pygame.mouse.get_pos()):
+                if credits_btn.collision(pygame.mouse.get_pos()):
                     return Screen.Credits
-                elif quit_btn.collision(pygame.mouse.get_pos()):
+                if quit_btn.collision(pygame.mouse.get_pos()):
                     return Screen.EXIT
 
         # Screen redraw
@@ -58,7 +60,7 @@ def credits_screen(screen):
     pygame.mouse.set_visible(True)
 
     # Font
-    font_size = 28
+    font_size = 36
     font = pygame.font.SysFont('Comic Sans MS', font_size)
 
     # Background
@@ -94,9 +96,14 @@ def credits_screen(screen):
                 blink.stop()
                 return Screen.EXIT
 
-            elif event.type == pygame.MOUSEBUTTONUP:
+            if event.type == pygame.MOUSEBUTTONUP:
                 blink.stop()
                 return Screen.Start
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    blink.stop()
+                    return Screen.Start
 
         # Screen redraw
         screen.fill([255, 255, 255])
@@ -182,7 +189,7 @@ def ending_screen(screen, score, time_played, fish_eaten):
                 blink.stop()
                 return Screen.EXIT
 
-            elif event.type == pygame.MOUSEBUTTONUP:
+            if event.type == pygame.MOUSEBUTTONUP:
                 blink.stop()
                 time.sleep(0.5)  # for smoother transition
                 return Screen.Start

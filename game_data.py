@@ -32,10 +32,11 @@ def set_property(name, value):
         screen_center = value / 2
 
     if name == 'SCREEN_HEIGHT':
-        global SCREEN_HEIGHT, screen_gap, screen_bottom
+        global SCREEN_HEIGHT, screen_gap, screen_bottom, SCORE_POSITION_TOP
         SCREEN_HEIGHT = value
         screen_gap = value / 2
         screen_bottom = value - 50
+        SCORE_POSITION_TOP = value - 50
 
 
 # ADD MORE IF NEEDED

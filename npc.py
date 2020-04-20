@@ -36,7 +36,7 @@ class NpcSprite(pygame.sprite.Sprite):
             return
 
         # How many times will this function be executed before changing direction
-        dirChangeTimer = DirectionChanger(gd.SCREEN_HEIGHT / 10, gd.SCREEN_HEIGHT / 2)
+        dirChangeTimer = DirectionChanger(round(gd.SCREEN_HEIGHT / 10), round(gd.SCREEN_HEIGHT / 2))
         self.move()
 
         if dirChangeTimer.value >= dirChangeTimer.max_value:
@@ -226,7 +226,7 @@ class FishGenerator:
     def get_location(self):
         max_iteration = 20
         for i in range(max_iteration):
-            a, b = [random.randint(100, gd.SCREEN_WIDTH - 100), random.randint(100, gd.SCREEN_HEIGHT - 100)]
+            a, b = [random.randint(100, round(gd.SCREEN_WIDTH - 100)), random.randint(100, round(gd.SCREEN_HEIGHT - 100))]
             found = True
             for other in self.fishes:
                 x2 = other.rect.centerx
@@ -245,6 +245,9 @@ class MovementController:
 
     def control(self):
         for fish in self.fishes:
+            if fish.id == -1:
+                continue
+
             if fish.rect.left < 0:
                 # fish.goOpposite()
                 fish.changeDirectionTo(Direction.East)
@@ -255,7 +258,7 @@ class MovementController:
             elif fish.rect.top > gd.SCREEN_HEIGHT - 50:
                 fish.changeDirectionTo(Direction.North)
 
-            if self.endangered(fish):
+            if self.endangered(fish) and fish.id != -1:
                 # fish.changeDirection()
                 fish.goOpposite()
                 fish.move()
@@ -274,7 +277,10 @@ class MovementController:
             y2 = other.rect.centery
             if math.sqrt(pow((x2 - x), 2) + pow((y2 - y), 2)) < gd.MIN_DISTANCE:
                 if math.sqrt(pow((x2 - x), 2) + pow((y2 - y), 2)) < gd.MIN_DISTANCE / 2:
-                    self.fishes.pop(find_index_of_fish(self.fishes, fish))
+                    # if the fish is eaten by the player it will be removed from the
+                    # tank in player's class
+                    if other.id != -1:
+                        self.fishes.pop(find_index_of_fish(self.fishes, fish))
 
                 return True
 
