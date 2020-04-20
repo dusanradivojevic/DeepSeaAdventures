@@ -14,6 +14,14 @@ import game_data as gd
 components = []  # Objects whose methods were used in threads
 
 
+def find_index_of_fish(list, fish):
+    for i in range(len(list)):
+        if fish.id == list[i].id:
+            return i
+
+    return -1
+
+
 def stop_threads(list):
     for item in list:
         item.stop()
@@ -63,7 +71,8 @@ def main_screen(screen):
                 if event == GAME_OVER_EVENT:
                     running = False
                     stop_threads(components)
-                    return other_screens.ending_screen(screen, game_controller.score, game_controller.played_time, game_controller.fish_eaten)
+                    return other_screens.ending_screen(screen, game_controller.score, game_controller.played_time,
+                                                       len(game_controller.fish_eaten))
 
         # Screen redraw
         screen.fill([255, 255, 255])
@@ -71,7 +80,12 @@ def main_screen(screen):
 
         movement_controller.control()
         for fish in listOfFishes:
-            if fish.id != -1 and not fish.alive:
+            if fish.id != -1 and not fish.alive and fish.size < gd.DANGER_FISH_SIZE:
+                listOfFishes.pop(find_index_of_fish(listOfFishes, fish))
+                continue
+
+            if fish.size == gd.DANGER_FISH_SIZE and fish.gone_out_of_the_screen:
+                listOfFishes.pop(find_index_of_fish(listOfFishes, fish))
                 continue
 
             fish.swim()

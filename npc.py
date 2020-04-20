@@ -3,7 +3,6 @@ import random, time
 import threading
 from direction import Direction, DirectionChanger
 import math
-from game_controller import find_index_of_fish
 import game_data as gd
 
 
@@ -151,10 +150,11 @@ class NpcSprite(pygame.sprite.Sprite):
 class BullShark(NpcSprite):
     def __init__(self, location, id):
         self.movement_speed = 35
-        self.size = 5000
+        self.size = gd.DANGER_FISH_SIZE    # danger fish characteristic (important in main.py)
         self.image_path = './img/npcs/'
         self.image_name = 'bull-shark'
         self.image_extension = '.png'
+        self.gone_out_of_the_screen = False
         NpcSprite.__init__(self, (-1, -1), id)
 
     # overrides
@@ -176,6 +176,10 @@ class BullShark(NpcSprite):
     def swim(self):
         if not self.alive:
             return
+
+        if self.rect.left < 3 * -1 * self.current_image.get_rect().size[0] or \
+            self.rect.left > 3 * self.current_image.get_rect().size[0]:
+            self.gone_out_of_the_screen = True
 
         self.move()
 
@@ -251,14 +255,14 @@ class MovementController:
             if fish.id == -1:
                 continue
 
-            if fish.rect.left < 0:
+            if fish.rect.centerx - fish.current_image.get_rect().size[0] / 2 < 0:
                 # fish.goOpposite()
                 fish.changeDirectionTo(Direction.East)
-            elif fish.rect.left > gd.SCREEN_WIDTH - 50:  # we dont want them to go off the screen
+            elif fish.rect.centerx + fish.current_image.get_rect().size[0] / 2 > gd.SCREEN_WIDTH:  # we dont want them to go off the screen
                 fish.changeDirectionTo(Direction.West)
-            elif fish.rect.top < 0:
+            elif fish.rect.centery - fish.current_image.get_rect().size[1] / 2 < 0:
                 fish.changeDirectionTo(Direction.South)
-            elif fish.rect.top > gd.SCREEN_HEIGHT - 50:
+            elif fish.rect.centery + fish.current_image.get_rect().size[1] / 2 > gd.SCREEN_HEIGHT:
                 fish.changeDirectionTo(Direction.North)
 
             if self.endangered(fish) and fish.id != -1:
@@ -278,15 +282,19 @@ class MovementController:
 
             x2 = other.rect.centerx
             y2 = other.rect.centery
-            if math.sqrt(pow((x2 - x), 2) + pow((y2 - y), 2)) < gd.MIN_DISTANCE:
-                if math.sqrt(pow((x2 - x), 2) + pow((y2 - y), 2)) < gd.MIN_DISTANCE / 2:
+
+            min_horizontal_distance = fish.current_image.get_rect().size[0] / 2 + \
+                                      other.current_image.get_rect().size[0] / 2 + gd.MIN_DISTANCE
+            min_vertical_distance = fish.current_image.get_rect().size[1] / 2 + \
+                                      other.current_image.get_rect().size[1] / 2 + gd.MIN_DISTANCE
+
+            if abs(x2 - x) < min_horizontal_distance and abs(y2 - y) < min_vertical_distance:
+                if abs(x2 - x) < min_horizontal_distance / 2 and abs(y2 - y) < min_vertical_distance / 2:
                     # if the fish is eaten by the player it will be removed from the
                     # tank in player's class
                     if other.id != -1:
-                        self.fishes.pop(find_index_of_fish(self.fishes, fish))
-
+                        fish.alive = False
                 return True
-
         return False
 
 
@@ -304,7 +312,7 @@ class FishGenerator:
 
     def start(self):
         while self.work:
-            if self.capacity == len(self.fishes):
+            if self.capacity <= len(self.fishes):
                 time.sleep(5)
                 # self.fishes[0].alive = False
                 # self.fishes.pop(0)

@@ -2,7 +2,7 @@
 screen = 0
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-TANK_CAPACITY = 10
+TANK_CAPACITY = 5
 SPAWN_FREQUENCY = 2  # every 2 seconds fish spawns
 SCORE_POSITION_LEFT = 0
 SCORE_POSITION_TOP = 550
@@ -25,7 +25,8 @@ DANGER_FISH_SPAWN_FREQUENCY = 20  # (In seconds)
 DANGER_SIGH_INTERVAL = 3  # Time that danger sign will blink before appearance of the danger fish (in seconds)
 
 # Npc.py
-MIN_DISTANCE = 50  # minimal distance between two fishes (in pixels)
+MIN_DISTANCE = 20  # minimal distance between two fishes (in pixels)
+DANGER_FISH_SIZE = 9999
 
 
 def set_property(name, value):
