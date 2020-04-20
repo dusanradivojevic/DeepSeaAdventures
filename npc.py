@@ -1,6 +1,6 @@
 import pygame
 import random, time
-from threading import Thread
+import threading
 from direction import Direction, DirectionChanger
 import math
 from game_controller import find_index_of_fish
@@ -20,13 +20,38 @@ class NpcSprite(pygame.sprite.Sprite):
         self.current_image = self.image_array[0]
         self.rect = self.current_image.get_rect()
         self.rect.left, self.rect.top = location[0], location[1]
+        self.direction = self.get_direction()
         self.alive = True
 
+        if location == (-1, -1):
+            self.rect.left, self.rect.top = self.set_location()
+
+    def set_location(self):
+        y = random.randint(self.current_image.get_rect().size[1],
+                           gd.SCREEN_HEIGHT - self.current_image.get_rect().size[1])
+
+        if self.direction == Direction.West:
+            x = gd.SCREEN_WIDTH + self.current_image.get_rect().size[0]
+        else:
+            x = -1 * self.current_image.get_rect().size[0]
+
+        return x, y
+
+    def get_location(self):
+        y = self.rect.top + self.current_image.get_rect().size[1]
+
+        if self.direction == Direction.West:
+            x = self.rect.left - self.current_image.get_rect().size[0]
+        else:
+            x = self.rect.left + self.current_image.get_rect().size[0]
+
+        return x, y
+
+    def get_direction(self):
         randDir = random.randint(-4, 4)  # Direciton values: [-4 , 4]
         while randDir == 0:
             randDir = random.randint(-4, 4)
-
-        self.direction = Direction(randDir)
+        return Direction(randDir)
 
     def stop(self):
         self.alive = False
@@ -107,9 +132,9 @@ class NpcSprite(pygame.sprite.Sprite):
             self.image_index = 0
 
         if self.direction.value < 0:
-            self.current_image = self.image_array[self.image_index]
-        else:
             self.current_image = self.reverse_image_array[self.image_index]
+        else:
+            self.current_image = self.image_array[self.image_index]
 
     def load_images(self, reverse=''):
         temp = []
@@ -120,6 +145,39 @@ class NpcSprite(pygame.sprite.Sprite):
                 i += 1
         except:
             return temp
+
+
+# Danger Fishes
+class BullShark(NpcSprite):
+    def __init__(self, location, id):
+        self.movement_speed = 35
+        self.size = 5000
+        self.image_path = './img/npcs/'
+        self.image_name = 'bull-shark'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, (-1, -1), id)
+
+    # overrides
+    def get_direction(self):
+        randDir = random.randint(-1, 1) * 3  # Direciton values: -3, 3 (west or east)
+        while randDir == 0:
+            randDir = random.randint(-1, 1) * 3
+        return Direction(randDir)
+
+    def changeDirection(self):
+        return
+
+    def changeDirectionTo(self, dir):
+        return
+
+    def goOpposite(self):
+        return
+
+    def swim(self):
+        if not self.alive:
+            return
+
+        self.move()
 
 
 # Types of fishes
@@ -183,6 +241,55 @@ class Bird(NpcSprite):
         NpcSprite.__init__(self, location, id)
 
 
+# Prevents fishes to go out of the screen and keeps smaller away from larger fish
+class MovementController:
+    def __init__(self, list):
+        self.fishes = list  # list of fishes in the tank
+
+    def control(self):
+        for fish in self.fishes:
+            if fish.id == -1:
+                continue
+
+            if fish.rect.left < 0:
+                # fish.goOpposite()
+                fish.changeDirectionTo(Direction.East)
+            elif fish.rect.left > gd.SCREEN_WIDTH - 50:  # we dont want them to go off the screen
+                fish.changeDirectionTo(Direction.West)
+            elif fish.rect.top < 0:
+                fish.changeDirectionTo(Direction.South)
+            elif fish.rect.top > gd.SCREEN_HEIGHT - 50:
+                fish.changeDirectionTo(Direction.North)
+
+            if self.endangered(fish) and fish.id != -1:
+                # fish.changeDirection()
+                fish.goOpposite()
+                fish.move()
+
+    def endangered(self, fish):
+        x = fish.rect.centerx
+        y = fish.rect.centery
+        for other in self.fishes:
+            if fish.id == other.id:
+                continue
+
+            if fish.size > other.size:
+                continue
+
+            x2 = other.rect.centerx
+            y2 = other.rect.centery
+            if math.sqrt(pow((x2 - x), 2) + pow((y2 - y), 2)) < gd.MIN_DISTANCE:
+                if math.sqrt(pow((x2 - x), 2) + pow((y2 - y), 2)) < gd.MIN_DISTANCE / 2:
+                    # if the fish is eaten by the player it will be removed from the
+                    # tank in player's class
+                    if other.id != -1:
+                        self.fishes.pop(find_index_of_fish(self.fishes, fish))
+
+                return True
+
+        return False
+
+
 # Fish generator class, spawn fishes in the tank
 class FishGenerator:
     def __init__(self, fish_tank_capacity, frequency, list):
@@ -237,51 +344,54 @@ class FishGenerator:
             if found:
                 return [a, b]
 
+    def spawn_danger_fish(self):
+        new_fish = BullShark(self.get_location(), self.id_generator)
+        new_fish.alive = False
+        self.fishes.append(new_fish)
+        self.id_generator += 1
+        blink = BlinkingImage(gd.screen, './img/npcs/danger-sign1.png', new_fish.get_location(), 0.7, new_fish)
+        blink_thread = threading.Thread(target=blink.start)
+        blink_thread.daemon = True
+        blink_thread.start()
+        timer_thread = threading.Timer(gd.DANGER_SIGH_INTERVAL, blink.stop)
+        timer_thread.daemon = True
+        timer_thread.start()
 
-# Prevents fishes to go out of the screen and keeps smaller away from larger fish
-class MovementController:
-    def __init__(self, list):
-        self.fishes = list  # list of fishes in the tank
 
-    def control(self):
-        for fish in self.fishes:
-            if fish.id == -1:
-                continue
+class BlinkingImage:
+    def __init__(self, screen, image_path, position, freq, fish):
+        self.screen = screen
+        self.fish = fish
+        self.image = pygame.image.load(image_path)
+        self.position = self.set_position(position)
+        self.frequency = freq
+        self.active = True
+        self.switch = False
 
-            if fish.rect.left < 0:
-                # fish.goOpposite()
-                fish.changeDirectionTo(Direction.East)
-            elif fish.rect.left > gd.SCREEN_WIDTH - 50:  # we dont want them to go off the screen
-                fish.changeDirectionTo(Direction.West)
-            elif fish.rect.top < 0:
-                fish.changeDirectionTo(Direction.South)
-            elif fish.rect.top > gd.SCREEN_HEIGHT - 50:
-                fish.changeDirectionTo(Direction.North)
+    def set_position(self, position):
+        y = position[1] - self.image.get_rect().size[1] * 2
 
-            if self.endangered(fish) and fish.id != -1:
-                # fish.changeDirection()
-                fish.goOpposite()
-                fish.move()
+        if self.fish.direction == Direction.West:
+            x = position[0] - self.image.get_rect().size[0]
+        else:
+            x = position[0]
 
-    def endangered(self, fish):
-        x = fish.rect.centerx
-        y = fish.rect.centery
-        for other in self.fishes:
-            if fish.id == other.id:
-                continue
+        return x, y
 
-            if fish.size > other.size:
-                continue
+    def stop(self):
+        self.fish.alive = True
+        self.active = False
 
-            x2 = other.rect.centerx
-            y2 = other.rect.centery
-            if math.sqrt(pow((x2 - x), 2) + pow((y2 - y), 2)) < gd.MIN_DISTANCE:
-                if math.sqrt(pow((x2 - x), 2) + pow((y2 - y), 2)) < gd.MIN_DISTANCE / 2:
-                    # if the fish is eaten by the player it will be removed from the
-                    # tank in player's class
-                    if other.id != -1:
-                        self.fishes.pop(find_index_of_fish(self.fishes, fish))
+    def start(self):
+        self.switcher()
+        while self.active:
+            if self.switch:
+                self.screen.blit(self.image, self.position)
 
-                return True
+    def switcher(self):
+        if not self.active:
+            return
 
-        return False
+        # waits self.frequency amount of seconds before it calls itself
+        threading.Timer(self.frequency, self.switcher).start()
+        self.switch = not self.switch

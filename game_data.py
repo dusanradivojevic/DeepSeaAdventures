@@ -1,4 +1,5 @@
 # General
+screen = 0
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
 TANK_CAPACITY = 10
@@ -20,12 +21,18 @@ IMAGE_SIZE_MISMATCH = 50  # Used for better representation of player eating othe
 FISH_SIZE_DIFFERENCE = 20  # It does not make sense if player with size of 401 can eat fish with 402 size (in percent)
 SCORE_PERCENT = 5  # Percent of fish size that will be added to player's SCORE after eating (in percent)
 SIZE_PERCENT = 5  # Percent of fish size that will be added to player's SIZE after eating (in percent)
+DANGER_FISH_SPAWN_FREQUENCY = 20  # (In seconds)
+DANGER_SIGH_INTERVAL = 3  # Time that danger sign will blink before appearance of the danger fish (in seconds)
 
 # Npc.py
 MIN_DISTANCE = 50  # minimal distance between two fishes (in pixels)
 
 
 def set_property(name, value):
+    if name == 'screen':
+        global screen
+        screen = value
+
     if name == 'SCREEN_WIDTH':
         global SCREEN_WIDTH, screen_center
         SCREEN_WIDTH = value

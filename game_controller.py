@@ -3,6 +3,7 @@ import math
 import pygame
 from sounds import SoundPlayer
 import game_data as gd
+import threading
 
 # Event custom types
 GAME_OVER_EVENT = pygame.event.Event(pygame.USEREVENT)
@@ -25,7 +26,7 @@ def find_index_of_fish(list, fish):
 
 
 class GameController:
-    def __init__(self, list, player):
+    def __init__(self, list, player, generator):
         self.score = 0
         self.fish_eaten = 0
         self.start_time = time.time()
@@ -33,8 +34,12 @@ class GameController:
         self.played_time = "0"
         self.fishes = list
         self.player = player
+        self.generator = generator
+        self.work = True
+        self.call_danger_fish()
 
     def stop(self):
+        self.work = False
         self.end_time = time.time()
         time_lapsed = self.end_time - self.start_time
         self.played_time = time_convert(time_lapsed)
@@ -52,7 +57,14 @@ class GameController:
                 elif self.player.size > ((100 + gd.FISH_SIZE_DIFFERENCE) / 100) * fish.size:
                     self.eat(fish)
 
-        # time.sleep(0.1)
+    def call_danger_fish(self):
+        if not self.work:
+            return
+
+        if round(time.time() - self.start_time) != 0:
+            self.generator.spawn_danger_fish()
+
+        threading.Timer(gd.DANGER_FISH_SPAWN_FREQUENCY, self.call_danger_fish).start()
 
     def get_score(self):
         return f'Score: {self.score}'

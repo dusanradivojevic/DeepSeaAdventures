@@ -165,7 +165,7 @@ def ending_screen(screen, score, time_played, fish_eaten):
     font_big = pygame.font.SysFont('Comic Sans MS', font_size_big)
 
     # Background
-    background = Background('./img/background/background_blue_patterns_.jpg', [0, 0])
+    background = Background('./img/background/abstract-dark-blue-polygonal-background-abstraktsiia-geometr.jpg', [0, 0])
 
     # Texts
     texts = [
@@ -175,9 +175,11 @@ def ending_screen(screen, score, time_played, fish_eaten):
         font.render('Thank you for playing!', False, gd.white_color)
     ]
 
-    starting_height = 200
+    # Screen location
+    starting_height = round(gd.SCREEN_HEIGHT / 3)
+    width = gd.screen_center - 200
 
-    blink = BlinkingText(screen, font, 'Press any key to continue...', [200, starting_height + (8 * font_size)], 0.7)
+    blink = BlinkingText(screen, font, 'Press any key to continue...', [width, starting_height + (8 * font_size)], 0.7)
     blink_thread = threading.Thread(target=blink.start)
     blink_thread.start()
     ###
@@ -200,12 +202,12 @@ def ending_screen(screen, score, time_played, fish_eaten):
 
         for i in range(len(texts)):
             # Game over text
-            screen.blit(font_big.render('GAME OVER :(', False, gd.white_color), [200, starting_height - (2 * font_size_big)])
+            screen.blit(font_big.render('GAME OVER :(', False, gd.white_color), [width, starting_height - (2 * font_size_big)])
             #
 
             if i == 3:
-                screen.blit(texts[i], [200, starting_height + (i * font_size + font_size)])
+                screen.blit(texts[i], [width, starting_height + (i * font_size + font_size)])
             else:
-                screen.blit(texts[i], [200, starting_height + (i * font_size)])
+                screen.blit(texts[i], [width, starting_height + (i * font_size)])
 
         pygame.display.update()

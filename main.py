@@ -42,7 +42,7 @@ def main_screen(screen):
     player = Player('./img/npcs/downloads/', 'fish', '.png', (0, 0), 350, -1)
     listOfFishes.append(player)
 
-    game_controller = GameController(listOfFishes, player)
+    game_controller = GameController(listOfFishes, player, generator)
     components.append(game_controller)
 
     # Main game loop
@@ -102,6 +102,7 @@ def main():
     w, h = screen.get_size()
     gd.set_property('SCREEN_WIDTH', w)
     gd.set_property('SCREEN_HEIGHT', h)
+    gd.set_property('screen', screen)
 
     pygame.display.set_caption("Feeding Frenzy")
     icon = pygame.image.load('./img/logo/fish-512.png')
