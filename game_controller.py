@@ -21,6 +21,9 @@ def time_convert(seconds):
 
 # Checks whether given array of fish types contains type the same as asked
 def has_type(array, given_type):
+    if len(array) == 0:
+        return False
+
     if array[0] == npc.NpcSprite:
         return True
 
