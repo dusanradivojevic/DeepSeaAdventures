@@ -15,7 +15,7 @@ class NpcSprite(pygame.sprite.Sprite):
         self.reverse_image_array = self.load_images('Reverse')
         self.image_index = 0  # tracking index of image in image array (for gifs)
         self.pace_tracker = 0  # for smoother transition of frames
-        self.pace_maker = 1 / len(self.image_array)  # addition to tracker at the end of each iteration
+        self.pace_maker = 1 / len(self.image_array) * 2  # (speed of animation)
         self.current_image = self.image_array[0]
         self.rect = self.current_image.get_rect()
         self.rect.left, self.rect.top = location[0], location[1]
@@ -51,7 +51,7 @@ class NpcSprite(pygame.sprite.Sprite):
         return x, y
 
     def get_direction(self):
-        randDir = random.randint(-4, 4)  # Direciton values: [-4 , 4]
+        randDir = random.randint(-4, 4)  # Direction values: [-4 , 4]
         while randDir == 0:
             randDir = random.randint(-4, 4)
         return Direction(randDir)
@@ -197,7 +197,7 @@ class BullShark(NpcSprite):
 # Types of fishes
 class BlueFish(NpcSprite):
     def __init__(self, location, id):
-        self.movement_speed = 2  # smaller fish -> higher speed -> more pixels change
+        self.movement_speed = 3  # smaller fish -> higher speed -> more pixels change
         self.size = 100
         self.image_path = './img/npcs/'
         self.image_name = 'BlueFish'
@@ -207,7 +207,7 @@ class BlueFish(NpcSprite):
 
 class FlyingFish(NpcSprite):
     def __init__(self, location, id):
-        self.movement_speed = 1.6
+        self.movement_speed = 2.6
         self.size = 100
         self.image_path = './img/npcs/'
         self.image_name = 'FlyingFish'
@@ -217,7 +217,7 @@ class FlyingFish(NpcSprite):
 
 class GreyFish(NpcSprite):
     def __init__(self, location, id):
-        self.movement_speed = 1.3
+        self.movement_speed = 2
         self.size = 300
         self.image_path = './img/npcs/'
         self.image_name = 'GreyFish'
@@ -227,7 +227,7 @@ class GreyFish(NpcSprite):
 
 class YellowFish(NpcSprite):
     def __init__(self, location, id):
-        self.movement_speed = 1  # not recommended to go below 1 pixel
+        self.movement_speed = 1.5  # not recommended to go below 1 pixel
         self.size = 1500
         self.image_path = './img/npcs/'
         self.image_name = 'YellowFish'
@@ -237,7 +237,7 @@ class YellowFish(NpcSprite):
 
 class YellowStrapeFish(NpcSprite):
     def __init__(self, location, id):
-        self.movement_speed = 1.2
+        self.movement_speed = 2.2
         self.size = 300
         self.image_path = './img/npcs/downloads/'
         self.image_name = 'frame'
@@ -247,7 +247,7 @@ class YellowStrapeFish(NpcSprite):
 
 class Bird(NpcSprite):
     def __init__(self, location, id):
-        self.movement_speed = 1.4
+        self.movement_speed = 2.4
         self.size = 300
         self.image_path = './img/npcs/downloads/'
         self.image_name = 'fish'
@@ -285,8 +285,7 @@ class MovementController:
                 fish.change_endangered_status()
                 threading.Timer(1, fish.change_endangered_status).start()
                 fish.changeDirection()
-                # fish.goOpposite()
-                # fish.move()
+                fish.move()
 
     def endangered(self, fish):
         x = fish.rect.centerx
@@ -310,7 +309,7 @@ class MovementController:
                 if abs(x2 - x) < min_horizontal_distance / 2 and abs(y2 - y) < min_vertical_distance / 2:
                     # if the fish is eaten by the player it will be removed from the
                     # tank in player's class
-                    if other.id != -1:
+                    if other.id != -1 and fish.size < ((100 - gd.FISH_SIZE_DIFFERENCE) / 100) * other.size:
                         fish.alive = False
                 return True
         return False
