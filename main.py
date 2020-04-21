@@ -35,7 +35,6 @@ def main_screen(screen):
     background = Background('./img/background/bottom-of-the-sea-background.jpg', [0, 0])
 
     # Score text
-    text_color = (255, 255, 255)  # White
     font_size = 28
     font = pygame.font.SysFont('Comic Sans MS', font_size)
 
@@ -98,11 +97,18 @@ def main_screen(screen):
         screen.blit(player.current_image, player.rect)
 
         # Showing score and level
-        level_surface = font.render(game_controller.get_level(), False, text_color)
-        score_surface = font.render(game_controller.get_score(), False, text_color)
+        level_surface = font.render(game_controller.get_level(), False, gd.white_color)
+        score_surface = font.render(game_controller.get_score(), False, gd.white_color)
         screen.blit(level_surface, (gd.SCORE_POSITION_LEFT, gd.SCORE_POSITION_TOP - font_size))
         screen.blit(score_surface, (gd.SCORE_POSITION_LEFT, gd.SCORE_POSITION_TOP))
-        #
+        #####
+
+        # Showing task
+        task_surfaces = game_controller.get_text_surface(font)
+        for i in range(len(task_surfaces)):
+            screen.blit(task_surfaces[i], (gd.TASK_POSITION_LEFT, gd.TASK_POSITION_TOP + (i * font_size)))
+        #####
+
         pygame.display.update()
         # End of redraw
 

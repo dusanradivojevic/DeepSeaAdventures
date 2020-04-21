@@ -4,6 +4,8 @@ import pygame
 from sounds import SoundPlayer
 import game_data as gd
 import threading
+import level_data as levels
+import npc
 
 # Event custom types
 GAME_OVER_EVENT = pygame.event.Event(pygame.USEREVENT)
@@ -15,6 +17,79 @@ def time_convert(seconds):
     sec = seconds % 60
     hours = min // 60
     return f'{hours} : {min} : {round(sec,2)}'
+
+
+# Checks whether given array of fish types contains type the same as asked
+def has_type(array, given_type):
+    if array[0] == npc.NpcSprite:
+        return True
+
+    for tp in array:
+        if tp == given_type:
+            return True
+    return False
+
+
+class TaskController:
+    def __init__(self, task):
+        self.task = task
+        self.fishes = []
+        self.score = 0
+
+    def task_update(self, eaten_fish, score):
+        if self.task.score_needed != 0:
+            self.score += score
+
+        if has_type(self.task.fish_types, type(eaten_fish)):
+            self.fishes.append(eaten_fish)
+
+    def get_text_surface(self, font):
+        rows = [
+            font.render('Tasks:', False, gd.white_color)
+        ]
+
+        if self.task.score_needed != 0:
+            sc = self.score if self.score < self.task.score_needed else self.task.score_needed
+            text = f'{round(sc)}/{self.task.score_needed}' \
+                   f' Score'
+            rows.append(font.render(text, False, gd.white_color))  # 0/500 Score
+
+        index = 0
+        for tp in self.task.fish_types:
+            num = self.number_of_eaten_fish_of_type(tp) if self.number_of_eaten_fish_of_type(tp) < \
+                self.task.fish_numbers[index] else self.task.fish_numbers[index]
+            text = f'{num}/{self.task.fish_numbers[index]}' \
+                   f' {levels.get_name_of_type(tp)}'
+            rows.append(font.render(text, False, gd.white_color))  # 0/5 BlueFish
+            index += 1
+
+        return rows
+
+    def number_of_eaten_fish_of_type(self, tp):
+        if tp == npc.NpcSprite:
+            return len(self.fishes)
+
+        count = 0
+        for fish in self.fishes:
+            if type(fish) == tp:
+                count += 1
+        return count
+
+    def is_completed(self):
+        if self.score < self.task.score_needed:
+            return False
+
+        # for each type of fish needed checks how much of them player has eaten
+        checking_fish_index = 0
+        for tp in self.task.fish_types:
+            count = self.number_of_eaten_fish_of_type(tp)
+
+            if count < self.task.fish_numbers[checking_fish_index]:
+                return False
+
+            checking_fish_index += 1  # next number of eaten fish needed
+
+        return True
 
 
 class GameController:
@@ -30,6 +105,12 @@ class GameController:
         self.generator = generator
         self.work = True
         self.call_danger_fish()
+        self.task_controller = TaskController(levels.get_random_task(self.level))
+
+    def change_level(self):
+        if self.task_controller.is_completed():
+            self.level += 1
+            self.task_controller = TaskController(levels.get_random_task(self.level))
 
     def stop(self):
         self.work = False
@@ -65,17 +146,22 @@ class GameController:
         threading.Timer(gd.DANGER_FISH_SPAWN_FREQUENCY, self.call_danger_fish).start()
 
     def get_score(self):
-        return f'Score: {self.score}'
+        return f'Score: {round(self.score)}'
 
     def get_level(self):
         return f'Level: {self.level}'
 
+    def get_text_surface(self, font):
+        return self.task_controller.get_text_surface(font)
+
     def eat(self, fish):
         SoundPlayer('./audio/eating_sound.wav', False).play()
         fish.stop()
-        # self.fishes.pop(find_index_of_fish(self.fishes, fish))
-        self.score += (gd.SCORE_PERCENT / 100) * fish.size
+        score_amount = (gd.SCORE_PERCENT / 100) * fish.size
+        self.score += score_amount
         self.fish_eaten.append(fish)
+        self.task_controller.task_update(fish, score_amount)
+        self.change_level()
         self.player.size += (gd.SIZE_PERCENT / 100) * fish.size
 
     def game_over(self):
