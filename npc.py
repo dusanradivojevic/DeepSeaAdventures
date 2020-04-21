@@ -26,8 +26,8 @@ class NpcSprite(pygame.sprite.Sprite):
             self.rect.left, self.rect.top = self.set_location()
 
     def set_location(self):
-        y = random.randint(self.current_image.get_rect().size[1],
-                           gd.SCREEN_HEIGHT - self.current_image.get_rect().size[1])
+        y = random.randint(self.current_image.get_rect().size[1] / 2,
+                           gd.SCREEN_HEIGHT - self.current_image.get_rect().size[1] / 2)
 
         if self.direction == Direction.West:
             x = gd.SCREEN_WIDTH + self.current_image.get_rect().size[0]

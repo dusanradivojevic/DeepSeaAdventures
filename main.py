@@ -36,7 +36,8 @@ def main_screen(screen):
 
     # Score text
     text_color = (255, 255, 255)  # White
-    font = pygame.font.SysFont('Comic Sans MS', 28)
+    font_size = 28
+    font = pygame.font.SysFont('Comic Sans MS', font_size)
 
     listOfFishes = []
 
@@ -96,8 +97,10 @@ def main_screen(screen):
 
         screen.blit(player.current_image, player.rect)
 
-        # Showing score
+        # Showing score and level
+        level_surface = font.render(game_controller.get_level(), False, text_color)
         score_surface = font.render(game_controller.get_score(), False, text_color)
+        screen.blit(level_surface, (gd.SCORE_POSITION_LEFT, gd.SCORE_POSITION_TOP - font_size))
         screen.blit(score_surface, (gd.SCORE_POSITION_LEFT, gd.SCORE_POSITION_TOP))
         #
         pygame.display.update()

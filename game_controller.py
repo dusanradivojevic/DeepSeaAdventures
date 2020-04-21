@@ -19,6 +19,7 @@ def time_convert(seconds):
 
 class GameController:
     def __init__(self, list, player, generator):
+        self.level = 1
         self.score = 0
         self.fish_eaten = []
         self.start_time = time.time()
@@ -65,6 +66,9 @@ class GameController:
 
     def get_score(self):
         return f'Score: {self.score}'
+
+    def get_level(self):
+        return f'Level: {self.level}'
 
     def eat(self, fish):
         SoundPlayer('./audio/eating_sound.wav', False).play()
