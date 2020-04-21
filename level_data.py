@@ -37,5 +37,5 @@ class Task:
 tasks = [
     Task(1, 100, [10], [npc.NpcSprite]),
     Task(3, 0, [6, 3], [npc.YellowStrapeFish, npc.BlueFish]),
-    Task(2, 300, [4], [npc.YellowFish])
+    Task(2, 300, [4], [npc.GreyFish])
 ]

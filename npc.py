@@ -21,9 +21,13 @@ class NpcSprite(pygame.sprite.Sprite):
         self.rect.left, self.rect.top = location[0], location[1]
         self.direction = self.get_direction()
         self.alive = True
+        self.endangered = False
 
         if location == (-1, -1):
             self.rect.left, self.rect.top = self.set_location()
+
+    def change_endangered_status(self):
+        self.endangered = not self.endangered
 
     def set_location(self):
         y = random.randint(self.current_image.get_rect().size[1] / 2,
@@ -105,19 +109,25 @@ class NpcSprite(pygame.sprite.Sprite):
         self.direction = dir
 
     def changeDirection(self):
+        # temp = random.randint(-4, 4)
+        # newValue = self.direction.value + temp
+        #
+        # if newValue > 4:
+        #     newValue = newValue - temp - 4
+        # elif newValue < -4:
+        #     newValue = newValue - temp + 4
+        #
+        # if newValue < -4 or newValue > 4:
+        #     raise RuntimeError(f'Value of direction can be in range of -4 and 4! '
+        #                        f'Current value: {newValue} ')
+        #
+        # self.direction = Direction(newValue)
+
         temp = random.randint(-4, 4)
-        newValue = self.direction.value + temp
+        while temp == 0 or temp == self.direction.value:
+            temp = random.randint(-4, 4)
 
-        if newValue > 4:
-            newValue = newValue - temp - 4
-        elif newValue < -4:
-            newValue = newValue - temp + 4
-
-        if newValue < -4 or newValue > 4:
-            raise RuntimeError(f'Value of direction can be in range of -4 and 4! '
-                               f'Current value: {newValue} ')
-
-        self.direction = Direction(newValue)
+        self.direction = Direction(temp)
 
     def pickImage(self):
         if self.pace_tracker < 1:
@@ -255,20 +265,28 @@ class MovementController:
             if fish.id == -1:
                 continue
 
-            if fish.rect.centerx - fish.current_image.get_rect().size[0] / 2 < 0:
-                # fish.goOpposite()
-                fish.changeDirectionTo(Direction.East)
-            elif fish.rect.centerx + fish.current_image.get_rect().size[0] / 2 > gd.SCREEN_WIDTH:  # we dont want them to go off the screen
-                fish.changeDirectionTo(Direction.West)
-            elif fish.rect.centery - fish.current_image.get_rect().size[1] / 2 < 0:
-                fish.changeDirectionTo(Direction.South)
-            elif fish.rect.centery + fish.current_image.get_rect().size[1] / 2 > gd.SCREEN_HEIGHT:
-                fish.changeDirectionTo(Direction.North)
+            if not fish.alive:
+                continue
 
-            if self.endangered(fish) and fish.id != -1:
-                # fish.changeDirection()
+            if fish.rect.centerx - fish.current_image.get_rect().size[0] / 2 < 0:
                 fish.goOpposite()
-                fish.move()
+                # fish.changeDirectionTo(Direction.East)
+            elif fish.rect.centerx + fish.current_image.get_rect().size[0] / 2 > gd.SCREEN_WIDTH:  # we dont want them to go off the screen
+                # fish.changeDirectionTo(Direction.West)
+                fish.goOpposite()
+            elif fish.rect.centery - fish.current_image.get_rect().size[1] / 2 < 0:
+                # fish.changeDirectionTo(Direction.South)
+                fish.goOpposite()
+            elif fish.rect.centery + fish.current_image.get_rect().size[1] / 2 > gd.SCREEN_HEIGHT:
+                # fish.changeDirectionTo(Direction.North)
+                fish.goOpposite()
+
+            if self.endangered(fish) and fish.id != -1 and not fish.endangered:
+                fish.change_endangered_status()
+                threading.Timer(1, fish.change_endangered_status).start()
+                fish.changeDirection()
+                # fish.goOpposite()
+                # fish.move()
 
     def endangered(self, fish):
         x = fish.rect.centerx
