@@ -5,6 +5,7 @@ import time
 import threading
 from enum import Enum
 import game_data as gd
+from player import Player
 
 
 class Screen(Enum):
@@ -13,6 +14,7 @@ class Screen(Enum):
     Start = 2
     Credits = 3
     GameOver = 4
+    HeroChoice = 5
 
 
 def starting_screen(screen):
@@ -21,10 +23,10 @@ def starting_screen(screen):
 
     # Font
     font_size = 36
-    font = pygame.font.SysFont('Comic Sans MS', font_size)
+    font = pygame.font.SysFont(gd.general_font_name, font_size)
 
     # Background
-    background = Background('./img/background/abstract-dark-blue-polygonal-background-abstraktsiia-geometr.jpg', [0, 0])
+    background = Background(gd.other_screens_background_path, [0, 0])
 
     # Buttons
     start_new_game_btn = Button(gd.screen_center, 0.25 * gd.SCREEN_HEIGHT, font, gd.white_color,  'Start new game')
@@ -37,9 +39,14 @@ def starting_screen(screen):
             if event.type == pygame.QUIT:
                 return Screen.EXIT
 
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE:
+                    return Screen.Game
+
             if event.type == pygame.MOUSEBUTTONUP:
                 if start_new_game_btn.collision(pygame.mouse.get_pos()):
-                    return Screen.Game
+                    # return Screen.Game
+                    return Screen.HeroChoice
                 if credits_btn.collision(pygame.mouse.get_pos()):
                     return Screen.Credits
                 if quit_btn.collision(pygame.mouse.get_pos()):
@@ -61,10 +68,10 @@ def credits_screen(screen):
 
     # Font
     font_size = 36
-    font = pygame.font.SysFont('Comic Sans MS', font_size)
+    font = pygame.font.SysFont(gd.general_font_name, font_size)
 
     # Background
-    background = Background('./img/background/abstract-dark-blue-polygonal-background-abstraktsiia-geometr.jpg', [0, 0])
+    background = Background(gd.other_screens_background_path, [0, 0])
 
     # Texts
     texts = ['Author:', 'Dusan Radivojevic', 'Year:', '2020']
@@ -152,7 +159,7 @@ class BlinkingText:
         self.switch = not self.switch
 
 
-def ending_screen(screen, score, time_played, fish_eaten):
+def ending_screen(screen, header_text, score, time_played, fish_eaten):
     time.sleep(1)   # for smoother screen transition
 
     # Cursor visibility
@@ -160,12 +167,12 @@ def ending_screen(screen, score, time_played, fish_eaten):
 
     # Font
     font_size = 28
-    font = pygame.font.SysFont('Comic Sans MS', font_size)
+    font = pygame.font.SysFont(gd.general_font_name, font_size)
     font_size_big = 36
-    font_big = pygame.font.SysFont('Comic Sans MS', font_size_big)
+    font_big = pygame.font.SysFont(gd.general_font_name, font_size_big)
 
     # Background
-    background = Background('./img/background/abstract-dark-blue-polygonal-background-abstraktsiia-geometr.jpg', [0, 0])
+    background = Background(gd.other_screens_background_path, [0, 0])
 
     # Texts
     texts = [
@@ -202,12 +209,85 @@ def ending_screen(screen, score, time_played, fish_eaten):
 
         for i in range(len(texts)):
             # Game over text
-            screen.blit(font_big.render('GAME OVER :(', False, gd.white_color), [width, starting_height - (2 * font_size_big)])
+            screen.blit(font_big.render(header_text, False, gd.white_color), [width, starting_height - (2 * font_size_big)])
             #
 
             if i == 3:
                 screen.blit(texts[i], [width, starting_height + (i * font_size + font_size)])
             else:
                 screen.blit(texts[i], [width, starting_height + (i * font_size)])
+
+        pygame.display.update()
+
+
+def hero_choosing_screen(screen):
+    # Cursor visibility
+    pygame.mouse.set_visible(True)
+
+    # Font
+    font_size = 36
+    font = pygame.font.SysFont(gd.general_font_name, font_size)
+
+    # Fish image size
+    image = pygame.image.load(gd.player_first_image_properties[0] + gd.player_first_image_properties[1] + '0' +
+                    gd.player_first_image_properties[2])
+    w, h = image.get_rect().size
+
+    # Text
+    text_surface = font.render('Click on the hero you want to play with', False, gd.white_color)
+    text_pos = [gd.SCREEN_WIDTH / 2 - text_surface.get_rect().size[0] / 2, gd.SCREEN_HEIGHT / 2 - 2 * h]
+
+    # Background
+    background = Background(gd.game_background_path, [0, 0])
+
+    # Positions
+    y = gd.SCREEN_HEIGHT / 2
+    pos1 = [gd.SCREEN_WIDTH / 3 - 2 * w, y]
+    pos2 = [2 * gd.SCREEN_WIDTH / 3 - 2 * w, y]
+    pos3 = [3 * gd.SCREEN_WIDTH / 3 - 2 * w, y]
+
+    # Hero images
+    player1 = Player(gd.player_first_image_properties[0], gd.player_first_image_properties[1],
+                    gd.player_first_image_properties[2], pos1, 350, -1)
+    player2 = Player(gd.player_second_image_properties[0], gd.player_second_image_properties[1],
+                     gd.player_second_image_properties[2], pos2, 350, -1)
+    player3 = Player(gd.player_third_image_properties[0], gd.player_third_image_properties[1],
+                     gd.player_third_image_properties[2], pos3, 350, -1)
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                return Screen.EXIT
+
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    return Screen.Start
+
+            if event.type == pygame.MOUSEBUTTONUP:
+                mouse_pos = pygame.mouse.get_pos()
+                if player1.rect.collidepoint(mouse_pos):
+                    gd.player_chosen_image_properties = gd.player_first_image_properties
+                    return Screen.Game
+                if player2.rect.collidepoint(mouse_pos):
+                    gd.player_chosen_image_properties = gd.player_second_image_properties
+                    return Screen.Game
+                if player3.rect.collidepoint(mouse_pos):
+                    gd.player_chosen_image_properties = gd.player_third_image_properties
+                    return Screen.Game
+
+        # Screen redraw
+        screen.fill([255, 255, 255])
+        screen.blit(background.image, background.rect)
+        screen.blit(text_surface, text_pos)
+        screen.blit(player1.current_image, player1.rect)
+        screen.blit(player2.current_image, player2.rect)
+        screen.blit(player3.current_image, player3.rect)
+        ###
+        # Image animation
+        player1.pickImage()
+        player2.pickImage()
+        player3.pickImage()
+        ###
 
         pygame.display.update()

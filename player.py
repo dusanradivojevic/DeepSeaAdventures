@@ -15,6 +15,9 @@ class Player:
         self.id = id
 
     # override
+    def speed_up(self):
+        return
+
     def swim(self):
         self.move()
 

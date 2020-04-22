@@ -1,4 +1,3 @@
-import pygame
 import npc
 import random
 
@@ -20,6 +19,10 @@ def get_name_of_type(tp):
         return 'Yellow-strape fish'
     if tp == npc.BlueFish:
         return 'Blue fish'
+    if tp == npc.GreyFish:
+        return 'Grey fish'
+    if tp == npc.BullShark:
+        return 'Danger fish'
 
     return 'Unknown'  # if type is wrong
 
@@ -38,5 +41,6 @@ tasks = [
     Task(1, 100, [], []),
     Task(1, 100, [10], [npc.NpcSprite]),
     Task(3, 0, [6, 3], [npc.YellowStrapeFish, npc.BlueFish]),
-    Task(2, 300, [4], [npc.GreyFish])
+    Task(2, 300, [4], [npc.GreyFish]),
+    Task(5, 0, [1], [npc.BullShark])
 ]

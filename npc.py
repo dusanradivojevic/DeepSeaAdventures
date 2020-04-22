@@ -155,10 +155,14 @@ class NpcSprite(pygame.sprite.Sprite):
         except:
             return temp
 
+    def speed_up(self):
+        self.movement_speed *= gd.SPEED_COEF / 100 + 1  # speed * 1.1
+
 
 # Danger Fishes
 class BullShark(NpcSprite):
     def __init__(self, location, id):
+        self.levels = [1, 2, 3, 4, 5]
         self.movement_speed = 35
         self.size = gd.DANGER_FISH_SIZE    # danger fish characteristic (important in main.py)
         self.image_path = './img/npcs/'
@@ -197,6 +201,7 @@ class BullShark(NpcSprite):
 # Types of fishes
 class BlueFish(NpcSprite):
     def __init__(self, location, id):
+        self.levels = [1]
         self.movement_speed = 3  # smaller fish -> higher speed -> more pixels change
         self.size = 100
         self.image_path = './img/npcs/'
@@ -207,6 +212,7 @@ class BlueFish(NpcSprite):
 
 class FlyingFish(NpcSprite):
     def __init__(self, location, id):
+        self.levels = [1, 2]
         self.movement_speed = 2.6
         self.size = 100
         self.image_path = './img/npcs/'
@@ -217,6 +223,7 @@ class FlyingFish(NpcSprite):
 
 class GreyFish(NpcSprite):
     def __init__(self, location, id):
+        self.levels = [1, 2, 3, 4]
         self.movement_speed = 2
         self.size = 300
         self.image_path = './img/npcs/'
@@ -227,6 +234,7 @@ class GreyFish(NpcSprite):
 
 class YellowFish(NpcSprite):
     def __init__(self, location, id):
+        self.levels = [1, 2, 3, 4, 5]
         self.movement_speed = 1.5  # not recommended to go below 1 pixel
         self.size = 1500
         self.image_path = './img/npcs/'
@@ -237,6 +245,7 @@ class YellowFish(NpcSprite):
 
 class YellowStrapeFish(NpcSprite):
     def __init__(self, location, id):
+        self.levels = [1, 2, 3]
         self.movement_speed = 2.2
         self.size = 300
         self.image_path = './img/npcs/downloads/'
@@ -247,176 +256,10 @@ class YellowStrapeFish(NpcSprite):
 
 class Bird(NpcSprite):
     def __init__(self, location, id):
+        self.levels = [1, 2, 3, 4]
         self.movement_speed = 2.4
         self.size = 300
         self.image_path = './img/npcs/downloads/'
         self.image_name = 'fish'
         self.image_extension = '.png'
         NpcSprite.__init__(self, location, id)
-
-
-# Prevents fishes to go out of the screen and keeps smaller away from larger fish
-class MovementController:
-    def __init__(self, list):
-        self.fishes = list  # list of fishes in the tank
-
-    def control(self):
-        for fish in self.fishes:
-            if fish.id == -1:
-                continue
-
-            if not fish.alive:
-                continue
-
-            if fish.rect.centerx - fish.current_image.get_rect().size[0] / 2 < 0:
-                fish.goOpposite()
-                # fish.changeDirectionTo(Direction.East)
-            elif fish.rect.centerx + fish.current_image.get_rect().size[0] / 2 > gd.SCREEN_WIDTH:  # we dont want them to go off the screen
-                # fish.changeDirectionTo(Direction.West)
-                fish.goOpposite()
-            elif fish.rect.centery - fish.current_image.get_rect().size[1] / 2 < 0:
-                # fish.changeDirectionTo(Direction.South)
-                fish.goOpposite()
-            elif fish.rect.centery + fish.current_image.get_rect().size[1] / 2 > gd.SCREEN_HEIGHT:
-                # fish.changeDirectionTo(Direction.North)
-                fish.goOpposite()
-
-            if self.endangered(fish) and fish.id != -1 and not fish.endangered:
-                fish.change_endangered_status()
-                threading.Timer(1, fish.change_endangered_status).start()
-                fish.changeDirection()
-                fish.move()
-
-    def endangered(self, fish):
-        x = fish.rect.centerx
-        y = fish.rect.centery
-        for other in self.fishes:
-            if fish.id == other.id:
-                continue
-
-            if fish.size > other.size:
-                continue
-
-            x2 = other.rect.centerx
-            y2 = other.rect.centery
-
-            min_horizontal_distance = fish.current_image.get_rect().size[0] / 2 + \
-                                      other.current_image.get_rect().size[0] / 2 + gd.MIN_DISTANCE
-            min_vertical_distance = fish.current_image.get_rect().size[1] / 2 + \
-                                      other.current_image.get_rect().size[1] / 2 + gd.MIN_DISTANCE
-
-            if abs(x2 - x) < min_horizontal_distance and abs(y2 - y) < min_vertical_distance:
-                if abs(x2 - x) < min_horizontal_distance / 2 and abs(y2 - y) < min_vertical_distance / 2:
-                    # if the fish is eaten by the player it will be removed from the
-                    # tank in player's class
-                    if other.id != -1 and fish.size < ((100 - gd.FISH_SIZE_DIFFERENCE) / 100) * other.size:
-                        fish.alive = False
-                return True
-        return False
-
-
-# Fish generator class, spawn fishes in the tank
-class FishGenerator:
-    def __init__(self, fish_tank_capacity, frequency, list):
-        self.id_generator = 0  # Should not be reduced
-        self.capacity = fish_tank_capacity
-        self.frequency = frequency
-        self.work = True
-        self.fishes = list  # list of fishes in the tank
-
-    def stop(self):
-        self.work = False
-
-    def start(self):
-        while self.work:
-            if self.capacity <= len(self.fishes):
-                time.sleep(5)
-                # self.fishes[0].alive = False
-                # self.fishes.pop(0)
-                continue
-
-            rand = random.randint(1, 15)  # top limit depends on number of species
-
-            if rand == 1:
-                new_fish = YellowFish(self.get_location(), self.id_generator)
-            if 1 < rand <= 3:
-                new_fish = YellowStrapeFish(self.get_location(), self.id_generator)
-            if 3 < rand <= 5:
-                new_fish = GreyFish(self.get_location(), self.id_generator)
-            if 5 < rand <= 8:
-                new_fish = BlueFish(self.get_location(), self.id_generator)
-            if 8 < rand <= 11:
-                new_fish = FlyingFish(self.get_location(), self.id_generator)
-            if 11 < rand <= 15:
-                new_fish = Bird(self.get_location(), self.id_generator)
-
-            self.fishes.append(new_fish)
-            self.id_generator += 1
-
-            time.sleep(self.frequency)
-
-    def get_location(self):
-        max_iteration = 20
-        for i in range(max_iteration):
-            a, b = [random.randint(100, round(gd.SCREEN_WIDTH - 100)), random.randint(100, round(gd.SCREEN_HEIGHT - 100))]
-            found = True
-            for other in self.fishes:
-                x2 = other.rect.centerx
-                y2 = other.rect.centery
-                if math.sqrt(pow((x2 - a), 2) + pow((y2 - b), 2)) < gd.MIN_DISTANCE / 2:
-                    found = False
-                    break
-            if found:
-                return [a, b]
-
-    def spawn_danger_fish(self):
-        new_fish = BullShark(self.get_location(), self.id_generator)
-        new_fish.alive = False
-        self.fishes.append(new_fish)
-        self.id_generator += 1
-        blink = BlinkingImage(gd.screen, './img/npcs/danger-sign1.png', new_fish.get_location(), 0.7, new_fish)
-        blink_thread = threading.Thread(target=blink.start)
-        blink_thread.daemon = True
-        blink_thread.start()
-        timer_thread = threading.Timer(gd.DANGER_SIGH_INTERVAL, blink.stop)
-        timer_thread.daemon = True
-        timer_thread.start()
-
-
-class BlinkingImage:
-    def __init__(self, screen, image_path, position, freq, fish):
-        self.screen = screen
-        self.fish = fish
-        self.image = pygame.image.load(image_path)
-        self.position = self.set_position(position)
-        self.frequency = freq
-        self.active = True
-        self.switch = False
-
-    def set_position(self, position):
-        y = position[1] - self.image.get_rect().size[1] * 2
-
-        if self.fish.direction == Direction.West:
-            x = position[0] - self.image.get_rect().size[0]
-        else:
-            x = position[0]
-
-        return x, y
-
-    def stop(self):
-        self.fish.alive = True
-        self.active = False
-
-    def start(self):
-        self.switcher()
-        while self.active:
-            if self.switch:
-                self.screen.blit(self.image, self.position)
-
-    def switcher(self):
-        if not self.active:
-            return
-
-        # waits self.frequency amount of seconds before it calls itself
-        threading.Timer(self.frequency, self.switcher).start()
-        self.switch = not self.switch

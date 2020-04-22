@@ -7,9 +7,6 @@ import threading
 import level_data as levels
 import npc
 
-# Event custom types
-GAME_OVER_EVENT = pygame.event.Event(pygame.USEREVENT)
-
 
 # Changes time lapsed from number of seconds to hours : minutes : seconds format
 def time_convert(seconds):
@@ -113,7 +110,12 @@ class GameController:
     def change_level(self):
         if self.task_controller.is_completed():
             self.level += 1
+            if self.level > gd.NUM_OF_LEVELS:
+                pygame.event.post(gd.GAME_WIN_EVENT)
+                return
+            self.generator.change_level()
             self.task_controller = TaskController(levels.get_random_task(self.level))
+            pygame.event.post(gd.LEVEL_CHANGED_EVENT)
 
     def stop(self):
         self.work = False
@@ -158,7 +160,7 @@ class GameController:
         return self.task_controller.get_text_surface(font)
 
     def eat(self, fish):
-        SoundPlayer('./audio/eating_sound.wav', False).play()
+        SoundPlayer(gd.eating_sound_path, False).play()
         fish.stop()
         score_amount = (gd.SCORE_PERCENT / 100) * fish.size
         self.score += score_amount
@@ -169,7 +171,7 @@ class GameController:
 
     def game_over(self):
         # Show end screen
-        pygame.event.post(GAME_OVER_EVENT)  # Raises QUIT event (should be changed so it can be
+        pygame.event.post(gd.GAME_OVER_EVENT)  # Raises QUIT event (should be changed so it can be
                                                             # distinguished from button interruption)
 
 
