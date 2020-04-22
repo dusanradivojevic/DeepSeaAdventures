@@ -54,8 +54,8 @@ game_background_path = './img/background/bottom-of-the-sea-background.jpg'
 other_screens_background_path = './img/background/abstract-dark-blue-polygonal-background-abstraktsiia-geometr.jpg'
 
 player_first_image_properties = ['./img/npcs/downloads/', 'fish', '.png']
-player_second_image_properties = ['./img/npcs/downloads/', 'fish', '.png']
-player_third_image_properties = ['./img/npcs/downloads/', 'fish', '.png']
+player_second_image_properties = ['./img/npcs/', 'YellowFish', '.png']
+player_third_image_properties = ['./img/npcs/downloads/', 'frame', '.png']
 
 player_chosen_image_properties = 0  # set after the hero choosing screen
 

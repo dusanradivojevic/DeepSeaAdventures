@@ -234,14 +234,14 @@ def hero_choosing_screen(screen):
     w, h = image.get_rect().size
 
     # Text
-    text_surface = font.render('Click on the hero you want to play with', False, gd.white_color)
+    text_surface = font.render('Choose your hero!', False, gd.white_color)
     text_pos = [gd.SCREEN_WIDTH / 2 - text_surface.get_rect().size[0] / 2, gd.SCREEN_HEIGHT / 2 - 2 * h]
 
     # Background
     background = Background(gd.game_background_path, [0, 0])
 
     # Positions
-    y = gd.SCREEN_HEIGHT / 2
+    y = gd.SCREEN_HEIGHT / 2 - h / 2
     pos1 = [gd.SCREEN_WIDTH / 3 - 2 * w, y]
     pos2 = [2 * gd.SCREEN_WIDTH / 3 - 2 * w, y]
     pos3 = [3 * gd.SCREEN_WIDTH / 3 - 2 * w, y]

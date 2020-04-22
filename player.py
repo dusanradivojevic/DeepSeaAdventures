@@ -1,4 +1,5 @@
 import pygame
+from direction import Direction
 
 
 class Player:
@@ -13,6 +14,8 @@ class Player:
         self.rect.left, self.rect.top = location
         self.size = size
         self.id = id
+        self.direction = Direction.East
+        self.earlier_position_x = self.rect.centerx
 
     # override
     def speed_up(self):
@@ -23,7 +26,15 @@ class Player:
 
     def move(self):
         self.rect.centerx, self.rect.centery = pygame.mouse.get_pos()
+        self.check_direction()
         self.pickImage()
+
+    def check_direction(self):
+        if self.earlier_position_x - self.rect.centerx < 0:
+            self.direction = Direction.East
+        elif self.earlier_position_x - self.rect.centerx > 0:
+            self.direction = Direction.West
+        self.earlier_position_x = self.rect.centerx
 
     def pickImage(self):
         if self.pace_tracker < 1:
@@ -36,12 +47,10 @@ class Player:
         if self.image_index > len(self.image_array) - 1:
             self.image_index = 0
 
-        self.current_image = self.image_array[self.image_index]
-
-        # if self.direction.value < 0:
-        #     self.current_image = self.image_array[self.image_index]
-        # else:
-        #     self.current_image = self.reverse_image_array[self.image_index]
+        if self.direction == Direction.East:
+            self.current_image = self.image_array[self.image_index]
+        else:
+            self.current_image = self.reverse_image_array[self.image_index]
 
     def load_images(self, img_path, img_name, img_extension, reverse=''):
         temp = []

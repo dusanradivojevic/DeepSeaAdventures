@@ -40,7 +40,8 @@ class Task:
 tasks = [
     Task(1, 100, [], []),
     Task(1, 100, [10], [npc.NpcSprite]),
-    Task(3, 0, [6, 3], [npc.YellowStrapeFish, npc.BlueFish]),
+    Task(3, 0, [6, 3], [npc.YellowStrapeFish, npc.FlyingFish]),
     Task(2, 300, [4], [npc.GreyFish]),
+    Task(4, 0, [1], [npc.YellowFish]),
     Task(5, 0, [1], [npc.BullShark])
 ]
