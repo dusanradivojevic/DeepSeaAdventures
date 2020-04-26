@@ -1,5 +1,5 @@
 import pygame
-from background import Background
+from background import GifBackground
 from npc import *
 import random
 import sys
@@ -76,12 +76,14 @@ def main_screen(screen):
     pygame.mouse.set_visible(False)
 
     # Background
-    background = Background(gd.game_background_path, [0, 0])
+    background = GifBackground(gd.game_background_properties[0], gd.game_background_properties[1],
+                               gd.game_background_properties[2], [0, 0])
 
     # Score text
     font_size = 28
+    font_size_big = 42
     font = pygame.font.SysFont(gd.general_font_name, font_size)
-    level_font = pygame.font.SysFont(gd.general_font_name, 2 * font_size)
+    big_font = pygame.font.SysFont(gd.general_font_name, font_size_big)
 
     listOfFishes = []
 
@@ -100,18 +102,38 @@ def main_screen(screen):
     components.append(game_controller)
 
     # Main game loop
+    pause = False
     running = True
     while running:
+        if pause:
+            for event in pygame.event.get():
+                if event.type == pygame.KEYUP:
+                    if event.key == pygame.K_p:
+                        pause = not pause
+                        Thread(target=generator.start).start()
+            for fish in listOfFishes:
+                screen.blit(fish.current_image, fish.rect)
+            screen.blit(player.current_image, player.rect)
+            pause_surface = big_font.render('Game paused', False, gd.white_color)
+            screen.blit(pause_surface, [round(gd.SCREEN_WIDTH / 2 - pause_surface.get_width() / 2),
+                                        round(gd.SCREEN_HEIGHT / 2 - font_size_big)])
+            pygame.display.update()
+            continue
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 stop_threads(components)
                 return Screen_Enum.EXIT
 
-            if event.type == pygame.KEYDOWN:
+            if event.type == pygame.KEYUP:
                 if event.key == pygame.K_ESCAPE:
                     running = False
                     stop_threads(components)
                     return Screen_Enum.Start
+                if event.key == pygame.K_p:
+                    pause = not pause
+                    generator.stop()
+                    continue
 
             if event == gd.GAME_OVER_EVENT:
                 running = False
@@ -130,11 +152,11 @@ def main_screen(screen):
                 #
                 # Text
                 others = [  # items that stay on screen while changig level
-                    [background.image, background.rect],
+                    [background.pickImage(), background.rect],
                     [player.current_image, player.rect]
                 ]
-                moving_text(screen, level_font, 'LEVEL UP!', gd.white_color, 10, Direction.North, others)
-                moving_text(screen, level_font, game_controller.get_level(), gd.white_color, 10, Direction.West, others)
+                moving_text(screen, big_font, 'LEVEL UP!', gd.white_color, 10, Direction.North, others)
+                moving_text(screen, big_font, game_controller.get_level(), gd.white_color, 10, Direction.West, others)
                 #
                 # Speeding up fish
                 for fish in listOfFishes:
@@ -144,7 +166,10 @@ def main_screen(screen):
 
         # Screen redraw
         screen.fill(gd.black_color)
-        screen.blit(background.image, background.rect)
+        screen.blit(background.current_image, background.rect)
+
+        # Background animation
+        background.pickImage()
 
         movement_controller.control()
         for fish in listOfFishes:
@@ -218,6 +243,9 @@ def main():
 
             if signal == Screen_Enum.HeroChoice:
                 signal = other_screens.hero_choosing_screen(screen)
+
+            if signal == Screen_Enum.Instructions:
+                signal = other_screens.instructions_screen(screen)
 
             # if signal == Screen_Enum.GameOver:
             #     signal = other_screens.ending_screen()

@@ -15,7 +15,7 @@ class NpcSprite(pygame.sprite.Sprite):
         self.reverse_image_array = self.load_images('Reverse')
         self.image_index = 0  # tracking index of image in image array (for gifs)
         self.pace_tracker = 0  # for smoother transition of frames
-        self.pace_maker = 1 / len(self.image_array) * 2  # (speed of animation)
+        self.pace_maker = 1 / len(self.image_array) * 2  # (speed of animation) greater the value greater the speed
         self.current_image = self.image_array[0]
         self.rect = self.current_image.get_rect()
         self.rect.left, self.rect.top = location[0], location[1]

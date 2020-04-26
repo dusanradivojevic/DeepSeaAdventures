@@ -50,7 +50,7 @@ NUM_OF_LEVELS = 5
 background_music_path = './audio/Dan Balan - Lendo Calendo ft. Tany Vander & Brasco (Lyric Video).wav'
 eating_sound_path = './audio/eating_sound.wav'
 danger_sign_path = './img/npcs/danger-sign1.png'
-game_background_path = './img/background/bottom-of-the-sea-background.jpg'
+game_background_properties = ['./img/gif/', 'coral', '.jpg']
 other_screens_background_path = './img/background/abstract-dark-blue-polygonal-background-abstraktsiia-geometr.jpg'
 
 player_first_image_properties = ['./img/npcs/downloads/', 'fish', '.png']

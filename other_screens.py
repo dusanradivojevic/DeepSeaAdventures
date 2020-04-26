@@ -1,6 +1,6 @@
 import pygame, sys
 from button import Button
-from background import Background
+from background import Background, GifBackground
 import time
 import threading
 from enum import Enum
@@ -15,6 +15,7 @@ class Screen(Enum):
     Credits = 3
     GameOver = 4
     HeroChoice = 5
+    Instructions = 6
 
 
 def starting_screen(screen):
@@ -29,9 +30,10 @@ def starting_screen(screen):
     background = Background(gd.other_screens_background_path, [0, 0])
 
     # Buttons
-    start_new_game_btn = Button(gd.screen_center, 0.25 * gd.SCREEN_HEIGHT, font, gd.white_color,  'Start new game')
-    credits_btn = Button(gd.screen_center, 0.45 * gd.SCREEN_HEIGHT, font,  gd.white_color, 'Credits')
-    quit_btn = Button(gd.screen_center, 0.65 * gd.SCREEN_HEIGHT, font,  gd.white_color, 'Quit game')
+    start_new_game_btn = Button(gd.screen_center, 0.20 * gd.SCREEN_HEIGHT, font, gd.white_color,  'Start new game')
+    instr_btn = Button(gd.screen_center, 0.40 * gd.SCREEN_HEIGHT, font, gd.white_color, 'Instructions')
+    credits_btn = Button(gd.screen_center, 0.60 * gd.SCREEN_HEIGHT, font,  gd.white_color, 'Credits')
+    quit_btn = Button(gd.screen_center, 0.80 * gd.SCREEN_HEIGHT, font,  gd.white_color, 'Quit game')
 
     running = True
     while running:
@@ -45,8 +47,9 @@ def starting_screen(screen):
 
             if event.type == pygame.MOUSEBUTTONUP:
                 if start_new_game_btn.collision(pygame.mouse.get_pos()):
-                    # return Screen.Game
                     return Screen.HeroChoice
+                if instr_btn.collision(pygame.mouse.get_pos()):
+                    return Screen.Instructions
                 if credits_btn.collision(pygame.mouse.get_pos()):
                     return Screen.Credits
                 if quit_btn.collision(pygame.mouse.get_pos()):
@@ -56,8 +59,79 @@ def starting_screen(screen):
         screen.fill([255, 255, 255])
         screen.blit(background.image, background.rect)
         screen.blit(start_new_game_btn.get_button(), start_new_game_btn.get_position())
+        screen.blit(instr_btn.get_button(), instr_btn.get_position())
         screen.blit(credits_btn.get_button(), credits_btn.get_position())
         screen.blit(quit_btn.get_button(), quit_btn.get_position())
+
+        pygame.display.update()
+
+
+def instructions_screen(screen):
+    ##
+    #   Current copy of credits screen
+    ##
+
+    # Cursor visibility
+    pygame.mouse.set_visible(True)
+
+    # Font
+    font_size = 36
+    font = pygame.font.SysFont(gd.general_font_name, font_size)
+
+    # Background
+    background = Background(gd.other_screens_background_path, [0, 0])
+
+    # Texts
+    texts = ['Author:', 'Dusan Radivojevic', 'Year:', '2020']
+
+    text_renders = []
+    for i in range(len(texts)):
+        text_renders.append(font.render(texts[i], False, gd.white_color))
+
+    text_rects = [
+        [text_renders[0], [gd.screen_center - (pygame.font.Font.size(font, texts[0])[0] / 2), gd.screen_bottom]],
+        [text_renders[1],
+         [gd.screen_center - (pygame.font.Font.size(font, texts[1])[0] / 2), gd.screen_bottom + font_size]],
+        [text_renders[2],
+         [gd.screen_center - (pygame.font.Font.size(font, texts[2])[0] / 2), gd.screen_bottom + (1 * gd.screen_gap)]],
+        [text_renders[3], [gd.screen_center - (pygame.font.Font.size(font, texts[3])[0] / 2),
+                           gd.screen_bottom + (1 * gd.screen_gap) + font_size]]
+        # [text_renders[4], [screen_center - (pygame.font.Font.size(font, texts[4])[0] / 2), screen_bottom + (2 * screen_gap)]],
+        # [text_renders[5], [screen_center - (pygame.font.Font.size(font, texts[5])[0] / 2), screen_bottom + (2 * screen_gap) + font_size]]
+    ]
+
+    blink = BlinkingText(screen, font, 'Press any key to continue...',
+                         [gd.screen_center - (pygame.font.Font.size(font, 'Press any key to continue...')[0] / 2),
+                          gd.SCREEN_HEIGHT / 2],
+                         0.7)
+    ###
+
+    finished_flag = False  # used for starting blinking text at the end of credits
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                blink.stop()
+                return Screen.EXIT
+
+            if event.type == pygame.MOUSEBUTTONUP or event.type == pygame.KEYUP:
+                blink.stop()
+                return Screen.Start
+
+        # Screen redraw
+        screen.fill([255, 255, 255])
+        screen.blit(background.image, background.rect)
+
+        if not finished_flag:
+            if text_rects[len(text_rects) - 1][1][1] < -100:
+                finished_flag = True
+                blink_thread = threading.Thread(target=blink.start)
+                blink_thread.start()
+
+            else:
+                for i in range(len(text_rects)):
+                    screen.blit(text_rects[i][0], text_rects[i][1])
+                    text_rects[i][1][1] -= 5  # speed of rising text
 
         pygame.display.update()
 
@@ -103,14 +177,9 @@ def credits_screen(screen):
                 blink.stop()
                 return Screen.EXIT
 
-            if event.type == pygame.MOUSEBUTTONUP:
+            if event.type == pygame.MOUSEBUTTONUP or event.type == pygame.KEYUP:
                 blink.stop()
                 return Screen.Start
-
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    blink.stop()
-                    return Screen.Start
 
         # Screen redraw
         screen.fill([255, 255, 255])
@@ -198,7 +267,7 @@ def ending_screen(screen, header_text, score, time_played, fish_eaten):
                 blink.stop()
                 return Screen.EXIT
 
-            if event.type == pygame.MOUSEBUTTONUP:
+            if event.type == pygame.MOUSEBUTTONUP or event.type == pygame.KEYUP:
                 blink.stop()
                 time.sleep(0.5)  # for smoother transition
                 return Screen.Start
@@ -238,7 +307,8 @@ def hero_choosing_screen(screen):
     text_pos = [gd.SCREEN_WIDTH / 2 - text_surface.get_rect().size[0] / 2, gd.SCREEN_HEIGHT / 2 - 2 * h]
 
     # Background
-    background = Background(gd.game_background_path, [0, 0])
+    background = GifBackground(gd.game_background_properties[0], gd.game_background_properties[1],
+                               gd.game_background_properties[2], [0, 0])
 
     # Positions
     y = gd.SCREEN_HEIGHT / 2 - h / 2
@@ -278,13 +348,14 @@ def hero_choosing_screen(screen):
 
         # Screen redraw
         screen.fill([255, 255, 255])
-        screen.blit(background.image, background.rect)
+        screen.blit(background.current_image, background.rect)
         screen.blit(text_surface, text_pos)
         screen.blit(player1.current_image, player1.rect)
         screen.blit(player2.current_image, player2.rect)
         screen.blit(player3.current_image, player3.rect)
         ###
         # Image animation
+        background.pickImage()
         player1.pickImage()
         player2.pickImage()
         player3.pickImage()
