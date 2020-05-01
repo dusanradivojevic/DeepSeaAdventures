@@ -1,11 +1,14 @@
 import pygame
+import game_data as gd
 
 
 class Background:
     def __init__(self, image_file, location):
         self.image = pygame.image.load(image_file)
         self.rect = self.image.get_rect()
-        self.rect.left, self.rect.top = location
+        # self.rect.left, self.rect.top = location
+        self.rect.left, self.rect.top = [0.5 * gd.SCREEN_WIDTH - 0.5 * self.image.get_width(),
+                                       0.5 * gd.SCREEN_HEIGHT - 0.5 * self.image.get_height()]  # centering background
 
 
 class GifBackground:

@@ -216,11 +216,14 @@ def main():
     icon = pygame.image.load(gd.screen_icon_path)
     pygame.display.set_icon(icon)
 
-    signal = Screen_Enum.Start
+    signal = Screen_Enum.Intro
     while True:
         if signal == Screen_Enum.EXIT:
             back_sound.stop()
             return
+
+        if signal == Screen_Enum.Intro:
+            signal = other_screens.intro_screen(screen)
 
         if signal == Screen_Enum.Start:
             signal = other_screens.starting_screen(screen)

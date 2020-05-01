@@ -125,23 +125,7 @@ class GameController:
         self.played_time = time_convert(time_lapsed)
 
     def start(self):
-        # x = self.player.rect.centerx
-        # y = self.player.rect.centery
         for fish in self.fishes:
-            # x2 = fish.rect.centerx
-            # y2 = fish.rect.centery
-            #
-            # min_horizontal_distance = fish.rect.width / 2 + \
-            #                           self.player.rect.width / 2 + gd.MIN_DISTANCE
-            # min_vertical_distance = fish.rect.height / 2 + \
-            #                        self.player.rect.height / 2 + gd.MIN_DISTANCE
-
-            # if abs(x2 - x) < min_horizontal_distance / 2 and abs(y2 - y) < min_vertical_distance / 2:
-            #     if self.player.size < ((100 - gd.FISH_SIZE_DIFFERENCE) / 100) * fish.size:
-            #         self.game_over()
-            #     elif self.player.size > ((100 + gd.FISH_SIZE_DIFFERENCE) / 100) * fish.size:
-            #         self.eat(fish)
-
             if self.player.size < ((100 - gd.FISH_SIZE_DIFFERENCE) / 100) * fish.size \
                     and fish.rect.left < self.player.rect.centerx < fish.rect.right\
                     and fish.rect.top + 0.2 * fish.rect.height < self.player.rect.centery < \

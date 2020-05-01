@@ -16,6 +16,10 @@ SCORE_POSITION_TOP = 550
 TASK_POSITION_LEFT = 10
 TASK_POSITION_TOP = 0
 
+# Intro screen
+press_any_key_text_delay = 2  # blinking text after amount of time (in seconds)
+start_screen_delay = 10  # after this amount of time of player's inactivity screen automatically changes to start screen
+
 # Other screens
 white_color = (255, 255, 255)
 black_color = (0, 0, 0)
@@ -38,6 +42,7 @@ SPEED_COEF = 10  # Amount of speed that fish will gain from higher levels (in pe
 GAME_OVER_EVENT = pygame.event.Event(pygame.USEREVENT)
 LEVEL_CHANGED_EVENT = pygame.event.Event(pygame.USEREVENT + 1)
 GAME_WIN_EVENT = pygame.event.Event(pygame.USEREVENT + 2)
+SKIP_INTRO_EVENT = pygame.event.Event(pygame.USEREVENT + 3)
 
 # Npc.py
 MIN_DISTANCE = 30 # minimal distance between two fishes (in pixels)
@@ -52,13 +57,21 @@ background_music_path = './audio/background_soundtrack.wav'
 eating_sound_path = './audio/eating_sound.wav'
 danger_sign_path = './img/npcs/danger/danger-sign1.png'
 game_background_path = './img/background/background.jpg'
-other_screens_background_path = './img/background/startscreen.jpg'
+other_screens_background_path = './img/mywork/other_background.jpg'
+intro_screen_background_path = './img/mywork/intro.jpg'
 
 player_first_image_properties = ['./img/player/lvl1/', 'blue', '.png']
 player_second_image_properties = ['./img/player/lvl1/', 'light', '.png']
 player_third_image_properties = ['./img/player/lvl1/', 'shark', '.png']
 
 player_chosen_image_properties = 0  # set after the hero choosing screen
+
+# Starting screen images
+choose_your_hero_img = './img/mywork/choose_your_fish_text.png'
+start_new_game_img = './img/mywork/new_game_text.png'
+about_img = './img/mywork/about_text.png'
+credits_img = './img/mywork/credits_text.png'
+quit_game_img = './img/mywork/quit_game_text.png'
 
 
 def set_property(name, value):

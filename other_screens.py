@@ -16,6 +16,7 @@ class Screen(Enum):
     GameOver = 4
     HeroChoice = 5
     AboutGame = 6
+    Intro = 7
 
 
 def starting_screen(screen):
@@ -23,17 +24,27 @@ def starting_screen(screen):
     pygame.mouse.set_visible(True)
 
     # Font
-    font_size = 36
-    font = pygame.font.SysFont(gd.general_font_name, font_size)
+    # font_size = 36
+    # font = pygame.font.SysFont(gd.general_font_name, font_size)
 
     # Background
     background = Background(gd.other_screens_background_path, [0, 0])
 
     # Buttons
-    start_new_game_btn = Button(gd.screen_center, 0.20 * gd.SCREEN_HEIGHT, font, gd.white_color,  'Start new game')
-    instr_btn = Button(gd.screen_center, 0.40 * gd.SCREEN_HEIGHT, font, gd.white_color, 'About game')
-    credits_btn = Button(gd.screen_center, 0.60 * gd.SCREEN_HEIGHT, font,  gd.white_color, 'Credits')
-    quit_btn = Button(gd.screen_center, 0.80 * gd.SCREEN_HEIGHT, font,  gd.white_color, 'Quit game')
+    # start_new_game_btn = Button(gd.screen_center, 0.20 * gd.SCREEN_HEIGHT, font, gd.white_color,  'Start new game')
+    # instr_btn = Button(gd.screen_center, 0.40 * gd.SCREEN_HEIGHT, font, gd.white_color, 'About game')
+    # credits_btn = Button(gd.screen_center, 0.60 * gd.SCREEN_HEIGHT, font,  gd.white_color, 'Credits')
+    # quit_btn = Button(gd.screen_center, 0.80 * gd.SCREEN_HEIGHT, font,  gd.white_color, 'Quit game')
+    start_new_game_btn = pygame.image.load(gd.start_new_game_img)
+    instr_btn = pygame.image.load(gd.about_img)
+    credits_btn = pygame.image.load(gd.credits_img)
+    quit_btn = pygame.image.load(gd.quit_game_img)
+
+    # Positions
+    start_pos = [gd.screen_center - start_new_game_btn.get_rect().width / 2, 0.2 * gd.SCREEN_HEIGHT]
+    instr_pos = [gd.screen_center - instr_btn.get_rect().width / 2, 0.4 * gd.SCREEN_HEIGHT]
+    credits_pos = [gd.screen_center - credits_btn.get_rect().width / 2, 0.6 * gd.SCREEN_HEIGHT]
+    quit_pos = [gd.screen_center - quit_btn.get_rect().width / 2, 0.8 * gd.SCREEN_HEIGHT]
 
     running = True
     while running:
@@ -46,22 +57,28 @@ def starting_screen(screen):
                     return Screen.Game
 
             if event.type == pygame.MOUSEBUTTONUP:
-                if start_new_game_btn.collision(pygame.mouse.get_pos()):
+                if start_new_game_btn.get_rect(left=start_pos[0], top=start_pos[1]).collidepoint(pygame.mouse.get_pos()):
                     return Screen.HeroChoice
-                if instr_btn.collision(pygame.mouse.get_pos()):
+                if instr_btn.get_rect(left=instr_pos[0], top=instr_pos[1]).collidepoint(pygame.mouse.get_pos()):
                     return Screen.AboutGame
-                if credits_btn.collision(pygame.mouse.get_pos()):
+                if credits_btn.get_rect(left=credits_pos[0], top=credits_pos[1]).collidepoint(pygame.mouse.get_pos()):
                     return Screen.Credits
-                if quit_btn.collision(pygame.mouse.get_pos()):
+                if quit_btn.get_rect(left=quit_pos[0], top=quit_pos[1]).collidepoint(pygame.mouse.get_pos()):
                     return Screen.EXIT
 
         # Screen redraw
         screen.fill([255, 255, 255])
-        screen.blit(background.image, background.rect)
-        screen.blit(start_new_game_btn.get_button(), start_new_game_btn.get_position())
-        screen.blit(instr_btn.get_button(), instr_btn.get_position())
-        screen.blit(credits_btn.get_button(), credits_btn.get_position())
-        screen.blit(quit_btn.get_button(), quit_btn.get_position())
+        # screen.blit(background.image, background.rect)
+        screen.blit(background.image, ((0.5 * gd.SCREEN_WIDTH) - (0.5 * background.image.get_width()),
+                                       (0.5 * gd.SCREEN_HEIGHT) - (0.5 * background.image.get_height())))
+        # screen.blit(start_new_game_btn.get_button(), start_new_game_btn.get_position())
+        # screen.blit(instr_btn.get_button(), instr_btn.get_position())
+        # screen.blit(credits_btn.get_button(), credits_btn.get_position())
+        # screen.blit(quit_btn.get_button(), quit_btn.get_position())
+        screen.blit(start_new_game_btn, start_pos)
+        screen.blit(instr_btn, instr_pos)
+        screen.blit(credits_btn, credits_pos)
+        screen.blit(quit_btn, quit_pos)
 
         pygame.display.update()
 
@@ -289,9 +306,9 @@ def ending_screen(screen, header_text, score, time_played, fish_eaten):
     pygame.mouse.set_visible(True)
 
     # Font
-    font_size = 28
+    font_size = 36
     font = pygame.font.SysFont(gd.general_font_name, font_size)
-    font_size_big = 36
+    font_size_big = 42
     font_big = pygame.font.SysFont(gd.general_font_name, font_size_big)
 
     # Background
@@ -353,15 +370,16 @@ def hero_choosing_screen(screen):
     p3 = ['./img/player/lvl2/', 'shark', '.png']
 
     # Font
-    font_size = 36
-    font = pygame.font.SysFont(gd.general_font_name, font_size)
+    # font_size = 36
+    # font = pygame.font.SysFont(gd.general_font_name, font_size)
 
     # Fish image size
     image = pygame.image.load(p1[0] + p1[1] + '0' + p1[2])
     w, h = image.get_rect().size
 
     # Text
-    text_surface = font.render('Choose your hero!', False, gd.white_color)
+    # text_surface = font.render('Choose your hero!', False, gd.white_color)
+    text_surface = pygame.image.load(gd.choose_your_hero_img)
     text_pos = [gd.SCREEN_WIDTH / 2 - text_surface.get_rect().size[0] / 2, gd.SCREEN_HEIGHT / 2 - 1.5 * h]
 
     # Background
@@ -416,3 +434,50 @@ def hero_choosing_screen(screen):
         ###
 
         pygame.display.update()
+
+
+def intro_screen(screen):
+    # Cursor visibility
+    pygame.mouse.set_visible(True)
+
+    # Font
+    font_size = 36
+    font = pygame.font.SysFont(gd.general_font_name, font_size)
+
+    # Background
+    background = Background(gd.intro_screen_background_path, [0, 0])
+
+    blink = BlinkingText(screen, font, 'Press any key to continue...',
+                         [gd.screen_center - (pygame.font.Font.size(font, 'Press any key to continue...')[0] / 2),
+                          gd.SCREEN_HEIGHT - 3 * font_size], 0.7)
+    ###
+
+    blink_thread = threading.Thread(target=blink.start)
+    threading.Timer(gd.press_any_key_text_delay, blink_thread.start).start()
+    threading.Timer(gd.start_screen_delay, raise_change_screen_event).start()
+
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                blink.stop()
+                return Screen.EXIT
+
+            if event.type == pygame.MOUSEBUTTONUP or event.type == pygame.KEYUP:
+                blink.stop()
+                return Screen.Start
+
+            if event == gd.SKIP_INTRO_EVENT:
+                blink.stop()
+                return Screen.Start
+
+        # Screen redraw
+        screen.fill([255, 255, 255])
+        screen.blit(background.image, background.rect)
+
+        pygame.display.update()
+
+
+# Used for changing screens due to player's inactivity
+def raise_change_screen_event():
+    pygame.event.post(gd.SKIP_INTRO_EVENT)
