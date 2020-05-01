@@ -12,7 +12,7 @@ class NpcSprite(pygame.sprite.Sprite):
         self.id = id
         pygame.sprite.Sprite.__init__(self)
         self.image_array = self.load_images()
-        self.reverse_image_array = self.load_images('Reverse')
+        self.reverse_image_array = self.load_images('reverse')
         self.image_index = 0  # tracking index of image in image array (for gifs)
         self.pace_tracker = 0  # for smoother transition of frames
         self.pace_maker = 1 / len(self.image_array) * 2  # (speed of animation) greater the value greater the speed
@@ -30,8 +30,8 @@ class NpcSprite(pygame.sprite.Sprite):
         self.endangered = not self.endangered
 
     def set_location(self):
-        y = random.randint(self.current_image.get_rect().size[1] / 2,
-                           gd.SCREEN_HEIGHT - self.current_image.get_rect().size[1] / 2)
+        y = random.randint(round(self.current_image.get_rect().size[1] / 2),
+                           round(gd.SCREEN_HEIGHT - self.current_image.get_rect().size[1] / 2))
 
         if self.direction == Direction.West:
             x = gd.SCREEN_WIDTH + self.current_image.get_rect().size[0]
@@ -160,13 +160,13 @@ class NpcSprite(pygame.sprite.Sprite):
 
 
 # Danger Fishes
-class BullShark(NpcSprite):
+class DangerFish(NpcSprite):
     def __init__(self, location, id):
         self.levels = [1, 2, 3, 4, 5]
         self.movement_speed = 35
         self.size = gd.DANGER_FISH_SIZE    # danger fish characteristic (important in main.py)
-        self.image_path = './img/npcs/'
-        self.image_name = 'bull-shark'
+        self.image_path = './img/npcs/danger/'
+        self.image_name = 'sharkdanger'
         self.image_extension = '.png'
         self.gone_out_of_the_screen = False
         NpcSprite.__init__(self, (-1, -1), id)
@@ -199,67 +199,170 @@ class BullShark(NpcSprite):
 
 
 # Types of fishes
-class BlueFish(NpcSprite):
+# Very small
+class Color(NpcSprite):
     def __init__(self, location, id):
-        self.levels = [1]
+        self.levels = [1, 2]
         self.movement_speed = 3  # smaller fish -> higher speed -> more pixels change
         self.size = 100
         self.image_path = './img/npcs/'
-        self.image_name = 'BlueFish'
+        self.image_name = 'color'
         self.image_extension = '.png'
         NpcSprite.__init__(self, location, id)
 
 
-class FlyingFish(NpcSprite):
+class Disc(NpcSprite):
     def __init__(self, location, id):
         self.levels = [1, 2]
         self.movement_speed = 2.6
         self.size = 100
         self.image_path = './img/npcs/'
-        self.image_name = 'FlyingFish'
+        self.image_name = 'disc'
         self.image_extension = '.png'
         NpcSprite.__init__(self, location, id)
 
 
-class GreyFish(NpcSprite):
+class Neon(NpcSprite):
     def __init__(self, location, id):
-        self.levels = [1, 2, 3, 4]
+        self.levels = [1, 2]
         self.movement_speed = 2
-        self.size = 300
+        self.size = 100
         self.image_path = './img/npcs/'
-        self.image_name = 'GreyFish'
+        self.image_name = 'neon'
         self.image_extension = '.png'
         NpcSprite.__init__(self, location, id)
 
 
-class YellowFish(NpcSprite):
+class Orange(NpcSprite):
     def __init__(self, location, id):
-        self.levels = [1, 2, 3, 4, 5]
-        self.movement_speed = 1.5  # not recommended to go below 1 pixel
-        self.size = 1500
+        self.levels = [1, 2]
+        self.movement_speed = 2  # not recommended to go below 1 pixel
+        self.size = 100
         self.image_path = './img/npcs/'
-        self.image_name = 'YellowFish'
+        self.image_name = 'orange'
         self.image_extension = '.png'
         NpcSprite.__init__(self, location, id)
 
 
-class YellowStrapeFish(NpcSprite):
+class Pixel(NpcSprite):
+    def __init__(self, location, id):
+        self.levels = [1, 2]
+        self.movement_speed = 2.2
+        self.size = 100
+        self.image_path = './img/npcs/'
+        self.image_name = 'pixel'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, location, id)
+
+
+# Small
+class Tropical(NpcSprite):
     def __init__(self, location, id):
         self.levels = [1, 2, 3]
-        self.movement_speed = 2.2
+        self.movement_speed = 1.9
         self.size = 300
-        self.image_path = './img/npcs/downloads/'
-        self.image_name = 'frame'
+        self.image_path = './img/npcs/'
+        self.image_name = 'tropical'
         self.image_extension = '.png'
         NpcSprite.__init__(self, location, id)
 
 
-class Bird(NpcSprite):
+class Zebra(NpcSprite):
     def __init__(self, location, id):
-        self.levels = [1, 2, 3, 4]
-        self.movement_speed = 2.4
+        self.levels = [1, 2, 3]
+        self.movement_speed = 1.8
         self.size = 300
-        self.image_path = './img/npcs/downloads/'
-        self.image_name = 'fish'
+        self.image_path = './img/npcs/'
+        self.image_name = 'zebra'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, location, id)
+
+
+class Guppy(NpcSprite):
+    def __init__(self, location, id):
+        self.levels = [1, 2, 3]
+        self.movement_speed = 1.8
+        self.size = 300
+        self.image_path = './img/npcs/'
+        self.image_name = 'guppy'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, location, id)
+
+
+class Tiger(NpcSprite):
+    def __init__(self, location, id):
+        self.levels = [1, 2, 3]
+        self.movement_speed = 1.8
+        self.size = 300
+        self.image_path = './img/npcs/'
+        self.image_name = 'tiger'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, location, id)
+
+
+# Medium
+class Stripes(NpcSprite):
+    def __init__(self, location, id):
+        self.levels = [2, 3, 4]
+        self.movement_speed = 1.4
+        self.size = 500
+        self.image_path = './img/npcs/'
+        self.image_name = 'stripes'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, location, id)
+
+
+class Dark(NpcSprite):
+    def __init__(self, location, id):
+        self.levels = [2, 3, 4]
+        self.movement_speed = 1.4
+        self.size = 500
+        self.image_path = './img/npcs/'
+        self.image_name = 'dark'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, location, id)
+
+
+class Tuna(NpcSprite):
+    def __init__(self, location, id):
+        self.levels = [2, 3, 4]
+        self.movement_speed = 1.5
+        self.size = 500
+        self.image_path = './img/npcs/'
+        self.image_name = 'tuna'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, location, id)
+
+
+class Red(NpcSprite):
+    def __init__(self, location, id):
+        self.levels = [2, 3, 4]
+        self.movement_speed = 1.5
+        self.size = 500
+        self.image_path = './img/npcs/'
+        self.image_name = 'red'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, location, id)
+
+
+# Large
+class Yellow(NpcSprite):
+    def __init__(self, location, id):
+        self.levels = [3, 4]
+        self.movement_speed = 1
+        self.size = 700
+        self.image_path = './img/npcs/'
+        self.image_name = 'yellow'
+        self.image_extension = '.png'
+        NpcSprite.__init__(self, location, id)
+
+
+class Killer(NpcSprite):
+    def __init__(self, location, id):
+        self.levels = [3, 4]
+        self.movement_speed = 1.2
+        self.size = 700
+        self.image_path = './img/npcs/'
+        self.image_name = 'killer'
         self.image_extension = '.png'
         NpcSprite.__init__(self, location, id)

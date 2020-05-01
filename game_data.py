@@ -1,12 +1,12 @@
 import pygame
 
 # General
-screen_caption = "Feeding frenzy"
+screen_caption = "Deep-Sea Adventures"
 screen_icon_path = './img/logo/fish-512.png'
 screen = 0
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 600
-TANK_CAPACITY = 10
+TANK_CAPACITY = 12
 SPAWN_FREQUENCY = 2  # every 2 seconds fish spawns
 general_font_name = 'Comic Sans MS'
 
@@ -27,7 +27,7 @@ screen_gap = 400  # space between two group of text in credits screen
 
 # Game_controller.py
 IMAGE_SIZE_MISMATCH = 50  # Used for better representation of player eating other fishes (in pixels)
-FISH_SIZE_DIFFERENCE = 20  # It does not make sense if player with size of 401 can eat fish with 402 size (in percent)
+FISH_SIZE_DIFFERENCE = 10  # It does not make sense if player with size of 401 can eat fish with 402 size (in percent)
 SCORE_PERCENT = 5  # Percent of fish size that will be added to player's SCORE after eating (in percent)
 SIZE_PERCENT = 5  # Percent of fish size that will be added to player's SIZE after eating (in percent)
 DANGER_FISH_SPAWN_FREQUENCY = 20  # (In seconds)
@@ -40,22 +40,23 @@ LEVEL_CHANGED_EVENT = pygame.event.Event(pygame.USEREVENT + 1)
 GAME_WIN_EVENT = pygame.event.Event(pygame.USEREVENT + 2)
 
 # Npc.py
-MIN_DISTANCE = 20  # minimal distance between two fishes (in pixels)
+MIN_DISTANCE = 30 # minimal distance between two fishes (in pixels)
 DANGER_FISH_SIZE = 9999
+PLAYER_BASE_SIZE = 200
 
 # Levels
-NUM_OF_LEVELS = 5
+NUM_OF_LEVELS = 4
 
 # Image and sound path
-background_music_path = './audio/Dan Balan - Lendo Calendo ft. Tany Vander & Brasco (Lyric Video).wav'
+background_music_path = './audio/background_soundtrack.wav'
 eating_sound_path = './audio/eating_sound.wav'
-danger_sign_path = './img/npcs/danger-sign1.png'
-game_background_properties = ['./img/gif/', 'coral', '.jpg']
-other_screens_background_path = './img/background/abstract-dark-blue-polygonal-background-abstraktsiia-geometr.jpg'
+danger_sign_path = './img/npcs/danger/danger-sign1.png'
+game_background_path = './img/background/background.jpg'
+other_screens_background_path = './img/background/startscreen.jpg'
 
-player_first_image_properties = ['./img/npcs/downloads/', 'fish', '.png']
-player_second_image_properties = ['./img/npcs/', 'YellowFish', '.png']
-player_third_image_properties = ['./img/npcs/downloads/', 'frame', '.png']
+player_first_image_properties = ['./img/player/lvl1/', 'blue', '.png']
+player_second_image_properties = ['./img/player/lvl1/', 'light', '.png']
+player_third_image_properties = ['./img/player/lvl1/', 'shark', '.png']
 
 player_chosen_image_properties = 0  # set after the hero choosing screen
 

@@ -13,15 +13,37 @@ def get_random_task(level):
 def get_name_of_type(tp):
     if tp == npc.NpcSprite:
         return 'Any'
-    if tp == npc.YellowFish:
+    elif tp == npc.Yellow:
         return 'Yellow fish'
-    if tp == npc.YellowStrapeFish:
-        return 'Yellow-strape fish'
-    if tp == npc.BlueFish:
-        return 'Blue fish'
-    if tp == npc.GreyFish:
+    elif tp == npc.Killer:
+        return 'Killer shark'
+    elif tp == npc.Stripes:
+        return 'Stripes fish'
+    elif tp == npc.Dark:
         return 'Grey fish'
-    if tp == npc.BullShark:
+    elif tp == npc.Tuna:
+        return 'Tuna fish'
+    elif tp == npc.Red:
+        return 'Red shark'
+    elif tp == npc.Tropical:
+        return 'Tropical fish'
+    elif tp == npc.Zebra:
+        return 'Zebra fish'
+    elif tp == npc.Guppy:
+        return 'Guppy'
+    elif tp == npc.Tiger:
+        return 'Tiger fish'
+    elif tp == npc.Pixel:
+        return 'Pixel'
+    elif tp == npc.Neon:
+        return 'Neon fish'
+    elif tp == npc.Color:
+        return 'Colorful fish'
+    elif tp == npc.Disc:
+        return 'Disc fish'
+    elif tp == npc.Orange:
+        return 'Small orange'
+    elif tp == npc.DangerFish:
         return 'Danger fish'
 
     return 'Unknown'  # if type is wrong
@@ -38,10 +60,9 @@ class Task:
 
 # Predefined tasks
 tasks = [
-    Task(1, 100, [], []),
-    Task(1, 100, [10], [npc.NpcSprite]),
-    Task(3, 0, [6, 3], [npc.YellowStrapeFish, npc.FlyingFish]),
-    Task(2, 300, [4], [npc.GreyFish]),
-    Task(4, 0, [1], [npc.YellowFish]),
-    Task(5, 0, [1], [npc.BullShark])
+    Task(1, 10, [], []),
+    Task(1, 10, [1], [npc.NpcSprite]),
+    Task(3, 0, [6, 3], [npc.Guppy, npc.Tuna]),
+    Task(2, 150, [4], [npc.Zebra]),
+    Task(4, 0, [1], [npc.Yellow])
 ]

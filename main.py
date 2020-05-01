@@ -1,5 +1,5 @@
 import pygame
-from background import GifBackground
+from background import Background
 from npc import *
 import random
 import sys
@@ -11,7 +11,7 @@ from sounds import SoundPlayer
 from other_screens import Screen as Screen_Enum
 import game_data as gd
 from fish_generator import FishGenerator
-from movement_controller import MovementController
+from movement_controller import MovementController, find_index_of_fish
 
 components = []  # Objects whose methods were used in threads
 
@@ -58,14 +58,6 @@ def moving_text(screen, font, text, color, speed, direction, other):
             position[1] -= speed
 
 
-def find_index_of_fish(list, fish):
-    for i in range(len(list)):
-        if fish.id == list[i].id:
-            return i
-
-    return -1
-
-
 def stop_threads(list):
     for item in list:
         item.stop()
@@ -76,8 +68,7 @@ def main_screen(screen):
     pygame.mouse.set_visible(False)
 
     # Background
-    background = GifBackground(gd.game_background_properties[0], gd.game_background_properties[1],
-                               gd.game_background_properties[2], [0, 0])
+    background = Background(gd.game_background_path, [0, 0])
 
     # Score text
     font_size = 28
@@ -95,7 +86,7 @@ def main_screen(screen):
     movement_controller = MovementController(listOfFishes)
 
     player = Player(gd.player_chosen_image_properties[0], gd.player_chosen_image_properties[1],
-                    gd.player_chosen_image_properties[2], (0, 0), 350, -1)
+                    gd.player_chosen_image_properties[2], (0, 0), -1)
     listOfFishes.append(player)
 
     game_controller = GameController(listOfFishes, player, generator)
@@ -152,11 +143,11 @@ def main_screen(screen):
                 #
                 # Text
                 others = [  # items that stay on screen while changig level
-                    [background.pickImage(), background.rect],
+                    [background.image, background.rect],
                     [player.current_image, player.rect]
                 ]
                 moving_text(screen, big_font, 'LEVEL UP!', gd.white_color, 10, Direction.North, others)
-                moving_text(screen, big_font, game_controller.get_level(), gd.white_color, 10, Direction.West, others)
+                moving_text(screen, big_font, game_controller.get_level(), gd.white_color, 15, Direction.West, others)
                 #
                 # Speeding up fish
                 for fish in listOfFishes:
@@ -166,10 +157,10 @@ def main_screen(screen):
 
         # Screen redraw
         screen.fill(gd.black_color)
-        screen.blit(background.current_image, background.rect)
+        screen.blit(background.image, background.rect)
 
         # Background animation
-        background.pickImage()
+        # background.pickImage()
 
         movement_controller.control()
         for fish in listOfFishes:
@@ -211,8 +202,8 @@ def main():
     pygame.init()
 
     # Background sound
-    # back_sound = SoundPlayer(gd.background_music_path, True)
-    # back_sound.play()
+    back_sound = SoundPlayer(gd.background_music_path, True)
+    back_sound.play()
 
     # Game screen options
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
@@ -225,34 +216,29 @@ def main():
     icon = pygame.image.load(gd.screen_icon_path)
     pygame.display.set_icon(icon)
 
-    try:
-        signal = Screen_Enum.Start
-        while True:
-            if signal == Screen_Enum.EXIT:
-                # back_sound.stop()
-                return
+    signal = Screen_Enum.Start
+    while True:
+        if signal == Screen_Enum.EXIT:
+            back_sound.stop()
+            return
 
-            if signal == Screen_Enum.Start:
-                signal = other_screens.starting_screen(screen)
+        if signal == Screen_Enum.Start:
+            signal = other_screens.starting_screen(screen)
 
-            if signal == Screen_Enum.Game:
-                signal = main_screen(screen)
+        if signal == Screen_Enum.Game:
+            signal = main_screen(screen)
 
-            if signal == Screen_Enum.Credits:
-                signal = other_screens.credits_screen(screen)
+        if signal == Screen_Enum.Credits:
+            signal = other_screens.credits_screen(screen)
 
-            if signal == Screen_Enum.HeroChoice:
-                signal = other_screens.hero_choosing_screen(screen)
+        if signal == Screen_Enum.HeroChoice:
+            signal = other_screens.hero_choosing_screen(screen)
 
-            if signal == Screen_Enum.Instructions:
-                signal = other_screens.instructions_screen(screen)
+        if signal == Screen_Enum.AboutGame:
+            signal = other_screens.about_the_game_screen(screen)
 
-            # if signal == Screen_Enum.GameOver:
-            #     signal = other_screens.ending_screen()
-
-    except Exception as e:
-        print('ERROR: ' + str(e))
-        stop_threads(components)
+        # if signal == Screen_Enum.GameOver:
+        #     signal = other_screens.ending_screen()
 
 
 main()

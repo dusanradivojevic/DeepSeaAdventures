@@ -2,6 +2,14 @@ import game_data as gd
 import threading
 
 
+def find_index_of_fish(list, fish):
+    for i in range(len(list)):
+        if fish.id == list[i].id:
+            return i
+
+    return -1
+
+
 # Prevents fishes to go out of the screen and keeps smaller away from larger fish
 class MovementController:
     def __init__(self, list):
@@ -15,14 +23,27 @@ class MovementController:
             if not fish.alive:
                 continue
 
-            if fish.rect.centerx - fish.current_image.get_rect().size[0] / 2 < 0:
-                fish.goOpposite()
-            elif fish.rect.centerx + fish.current_image.get_rect().size[0] / 2 > gd.SCREEN_WIDTH:  # we dont want them to go off the screen
-                fish.goOpposite()
-            elif fish.rect.centery - fish.current_image.get_rect().size[1] / 2 < 0:
-                fish.goOpposite()
-            elif fish.rect.centery + fish.current_image.get_rect().size[1] / 2 > gd.SCREEN_HEIGHT:
-                fish.goOpposite()
+            # if fish.rect.centerx - fish.current_image.get_rect().size[0] / 2 < 0:
+            #     fish.goOpposite()
+            # elif fish.rect.centerx + fish.current_image.get_rect().size[0] / 2 > gd.SCREEN_WIDTH:  # we dont want them to go off the screen
+            #     fish.goOpposite()
+            # elif fish.rect.centery - fish.current_image.get_rect().size[1] / 2 < 0:
+            #     fish.goOpposite()
+            # elif fish.rect.centery + fish.current_image.get_rect().size[1] / 2 > gd.SCREEN_HEIGHT:
+            #     fish.goOpposite()
+
+            if fish.rect.centerx + fish.current_image.get_rect().size[0] < 0:
+                # self.fishes.pop(find_index_of_fish(self.fishes, fish))
+                fish.alive = False
+            elif fish.rect.centerx - fish.current_image.get_rect().size[0] > gd.SCREEN_WIDTH:
+                # self.fishes.pop(find_index_of_fish(self.fishes, fish))
+                fish.alive = False
+            elif fish.rect.centery + fish.current_image.get_rect().size[1] < 0:
+                # self.fishes.pop(find_index_of_fish(self.fishes, fish))
+                fish.alive = False
+            elif fish.rect.centery - fish.current_image.get_rect().size[1] > gd.SCREEN_HEIGHT:
+                # self.fishes.pop(find_index_of_fish(self.fishes, fish))
+                fish.alive = False
 
             if self.endangered(fish) and fish.id != -1 and not fish.endangered:
                 fish.change_endangered_status()

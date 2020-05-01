@@ -36,20 +36,45 @@ class FishGenerator:
                 # self.fishes.pop(0)
                 continue
 
-            rand = random.randint(1, 15)  # top limit depends on number of species
+            rand = random.randint(1, 58)  # top limit depends on number of species
 
-            if rand == 1:
-                new_fish = YellowFish(self.get_location(), self.id_generator)
-            if 1 < rand <= 3:
-                new_fish = YellowStrapeFish(self.get_location(), self.id_generator)
-            if 3 < rand <= 5:
-                new_fish = GreyFish(self.get_location(), self.id_generator)
-            if 5 < rand <= 8:
-                new_fish = BlueFish(self.get_location(), self.id_generator)
-            if 8 < rand <= 11:
-                new_fish = FlyingFish(self.get_location(), self.id_generator)
-            if 11 < rand <= 15:
-                new_fish = Bird(self.get_location(), self.id_generator)
+            # Large
+            if 0 < rand <= 2:
+                new_fish = Yellow(self.get_location(), self.id_generator)
+            elif 2 < rand <= 4:
+                new_fish = Killer(self.get_location(), self.id_generator)
+
+            # Medium
+            elif 4 < rand <= 7:
+                new_fish = Stripes(self.get_location(), self.id_generator)
+            elif 7 < rand <= 10:
+                new_fish = Dark(self.get_location(), self.id_generator)
+            elif 10 < rand <= 13:
+                new_fish = Tuna(self.get_location(), self.id_generator)
+            elif 13 < rand <= 17:
+                new_fish = Red(self.get_location(), self.id_generator)
+
+            # Small
+            elif 17 < rand <= 21:
+                new_fish = Tropical(self.get_location(), self.id_generator)
+            elif 21 < rand <= 25:
+                new_fish = Zebra(self.get_location(), self.id_generator)
+            elif 25 < rand <= 29:
+                new_fish = Guppy(self.get_location(), self.id_generator)
+            elif 29 < rand <= 33:
+                new_fish = Tiger(self.get_location(), self.id_generator)
+
+            # Very small
+            elif 33 < rand <= 38:
+                new_fish = Pixel(self.get_location(), self.id_generator)
+            elif 38 < rand <= 43:
+                new_fish = Neon(self.get_location(), self.id_generator)
+            elif 43 < rand <= 48:
+                new_fish = Color(self.get_location(), self.id_generator)
+            elif 48 < rand <= 53:
+                new_fish = Disc(self.get_location(), self.id_generator)
+            elif 53 < rand <= 58:
+                new_fish = Orange(self.get_location(), self.id_generator)
 
             if self.level not in new_fish.levels:
                 continue
@@ -78,7 +103,7 @@ class FishGenerator:
         if not self.work:
             return
 
-        new_fish = BullShark(self.get_location(), self.id_generator)
+        new_fish = DangerFish([0, 0], self.id_generator)
         new_fish.alive = False
         self.fishes.append(new_fish)
         self.id_generator += 1
