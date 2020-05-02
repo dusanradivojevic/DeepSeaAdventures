@@ -12,3 +12,7 @@ Whole project is made in Python 3 using PyGame library. <br>Development environm
 
 ## Game images
 For some images from the game click [here](img/Gameplay/).
+
+## Installation
+To make executable file, within project directory type:
+`python setup.py build`
