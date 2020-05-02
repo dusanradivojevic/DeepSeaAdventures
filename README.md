@@ -8,4 +8,4 @@ It's survival of the biggest in this action packed deep-sea challenge. Eat your 
 Whole project is made in Python 3 using PyGame library. <br>Development environment is PyCharm.
 
 ## Game images
-For some images from game click [here](Gameplay/).
+For some images from game click [here](img/Gameplay/).
