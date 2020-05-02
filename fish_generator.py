@@ -87,17 +87,22 @@ class FishGenerator:
     def get_location(self):
         max_iteration = 20
         for i in range(max_iteration):
-            a, b = [random.randint(100, round(gd.SCREEN_WIDTH - 100)), random.randint(100, round(gd.SCREEN_HEIGHT - 100))]
+            a, b = [random.randint(0, round(gd.SCREEN_WIDTH)), random.randint(0, round(gd.SCREEN_HEIGHT))]
             found = True
             for other in self.fishes:
-                # x2 = other.rect.centerx
-                # y2 = other.rect.centery
-                # if math.sqrt(pow((x2 - a), 2) + pow((y2 - b), 2)) < gd.MIN_DISTANCE / 2:
+                if other.id == -1:
+                    if other.rect.left - 200 > a > other.rect.right + 200\
+                            and other.rect.top - 200 > b > other.rect.bottom + 200:
+                        found = False
+                        break
+
                 if other.rect.collidepoint(a, b):
                     found = False
                     break
             if found:
                 return [a, b]
+
+        return -100, -100  # if not found in max iterations
 
     def spawn_danger_fish(self):
         if not self.work:

@@ -60,16 +60,16 @@ class Task:
 
 # Predefined tasks
 tasks = [
-    Task(1, 200, [], []),
-    Task(1, 100, [8], [npc.NpcSprite]),
-    Task(1, 100, [2, 3], [npc.Color, npc.Neon]),
-    Task(1, 100, [1, 4], [npc.Pixel, npc.Disc]),
+    Task(1, 100, [], []),
+    Task(1, 50, [8], [npc.NpcSprite]),
+    Task(1, 50, [2, 3], [npc.Color, npc.Neon]),
+    Task(1, 50, [1, 4], [npc.Pixel, npc.Disc]),
     Task(1, 75, [2, 2, 2], [npc.Orange, npc.Disc, npc.Color]),
-    Task(3, 500, [], []),
+    Task(3, 400, [], []),
     Task(3, 250, [6, 3], [npc.Tuna, npc.Red]),
     Task(3, 250, [2, 7], [npc.Stripes, npc.Dark]),
     Task(3, 200, [4, 4, 4], [npc.Guppy, npc.Tuna, npc.Dark]),
-    Task(2, 300, [], []),
+    Task(2, 200, [], []),
     Task(2, 150, [11], [npc.NpcSprite]),
     Task(2, 150, [4, 3], [npc.Zebra, npc.Tropical]),
     Task(2, 150, [2, 5], [npc.Guppy, npc.Tiger]),

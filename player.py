@@ -12,7 +12,7 @@ class Player:
         self.reverse_image_array = self.load_images(img_path, img_name, img_extension, 'reverse')
         self.image_index = 0  # tracking index of image in image array (for gifs)
         self.pace_tracker = 0  # for smoother transition of frames
-        self.pace_maker = 1 / len(self.image_array)  # addition to tracker at the end of each iteration
+        self.pace_maker = 1 / len(self.image_array) * 2  # addition to tracker at the end of each iteration
         self.current_image = self.image_array[0]
         self.rect = self.current_image.get_rect()
         self.rect.left, self.rect.top = location
@@ -74,4 +74,5 @@ class Player:
         self.image_array = self.load_images(self.img_path, self.img_name, self.img_extension)
         self.reverse_image_array = self.load_images(self.img_path, self.img_name, self.img_extension, 'reverse')
         self.current_image = self.image_array[0]
-        self.rect = self.current_image.get_rect()
+        temp1, temp2 = self.rect.left, self.rect.top
+        self.rect = self.current_image.get_rect(left=temp1, top=temp2)

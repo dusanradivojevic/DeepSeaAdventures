@@ -17,10 +17,9 @@ class MovementController:
 
     def control(self):
         for fish in self.fishes:
-            if fish.id == -1:
-                continue
-
-            if not fish.alive:
+            if fish.id == -1 \
+                or not fish.alive\
+                    or fish.size == gd.DANGER_FISH_SIZE:
                 continue
 
             # if fish.rect.centerx - fish.current_image.get_rect().size[0] / 2 < 0:

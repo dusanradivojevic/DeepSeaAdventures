@@ -23,7 +23,9 @@ class NpcSprite(pygame.sprite.Sprite):
         self.alive = True
         self.endangered = False
 
+        # danger fish
         if location == (-1, -1):
+            self.pace_maker = 1.5
             self.rect.left, self.rect.top = self.set_location()
 
     def change_endangered_status(self):
@@ -191,8 +193,8 @@ class DangerFish(NpcSprite):
         if not self.alive:
             return
 
-        if self.rect.left < 3 * -1 * self.current_image.get_rect().size[0] or \
-            self.rect.left > 3 * self.current_image.get_rect().size[0]:
+        if self.rect.left < 5 * -1 * self.current_image.get_rect().size[0] or \
+            self.rect.left > 5 * self.current_image.get_rect().size[0]:
             self.gone_out_of_the_screen = True
 
         self.move()

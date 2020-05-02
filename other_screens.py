@@ -215,7 +215,7 @@ def credits_screen(screen):
     background = Background(gd.other_screens_background_path, [0, 0])
 
     # Texts
-    texts = ['DEEP-SEA ADVENTURES', 'All rights reserved.', 'Author:', 'Milos Djordjevic', 'Created on:',
+    texts = ['DEEP-SEA ADVENTURES', '', 'Author:', 'Dušan Radivojević', 'Created on:',
              '30th of April, 2020', 'Version:', 'Beta 1.1.1']
 
     text_renders = []
