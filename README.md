@@ -15,4 +15,4 @@ For some images from the game click [here](img/Gameplay/).
 
 ## Installation
 To make executable file, within project directory type:
-`python setup.py build` then open main.exe file.<br>Enjoy!
+`python setup.py build` then open *main.exe* file.<br>Enjoy!
