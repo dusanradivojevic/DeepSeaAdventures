@@ -1,3 +1,5 @@
+![](img/Gameplay/gif1.gif)
+
 # Deep-Sea Adventures
 Interactive survival game made with PyGame.
 
@@ -16,3 +18,5 @@ For some images from the game click [here](img/Gameplay/).
 ## Installation
 To make executable file, within project directory type:
 `python setup.py build` then open *main.exe* file.<br>Enjoy!
+
+![](img/Gameplay/gif2.gif)
